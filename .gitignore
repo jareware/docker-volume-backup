@@ -1,0 +1,10 @@
+# General
+node_modules/
+npm-debug.log
+.env
+.DS_Store
+.history
+.vscode
+
+# Project
+# n/a

@@ -9,7 +9,7 @@ BACKUP_FILENAME="${BACKUP_FILENAME:-latest.tar.gz}"
 BACKUP_PERIOD_SECONDS="${BACKUP_PERIOD_SECONDS:-86400}" # i.e. every 24 hours
 BACKUP_UPLOAD_WAIT_SECONDS="${BACKUP_UPLOAD_WAIT_SECONDS:-30}" # to wait out the load spike of starting the containers back up
 BACKUP_HOSTNAME="${BACKUP_HOSTNAME:-$(hostname)}"
-DOCKER_STOP_OPT_OUT_LABEL="${DOCKER_STOP_OPT_OUT_LABEL:-docker-volume-backup-companion.dont-stop-during-backup}"
+DOCKER_STOP_OPT_IN_LABEL="${DOCKER_STOP_OPT_IN_LABEL:-docker-volume-backup-companion.stop-during-backup}"
 INFLUXDB_URL="${INFLUXDB_URL:-}"
 INFLUXDB_DB="${INFLUXDB_DB:-}"
 INFLUXDB_CREDENTIALS="${INFLUXDB_CREDENTIALS:-}"
@@ -27,7 +27,7 @@ sleep "$BACKUP_PERIOD_SECONDS"
 
 info "Backup starting"
 TIME_START="$(date +%s.%N)"
-CONTAINERS_TO_STOP="$(docker ps --format "{{.ID}} {{.Label \"$DOCKER_STOP_OPT_OUT_LABEL\"}}" | grep -v true | tr '\n' ' ')"
+CONTAINERS_TO_STOP="$(docker ps --format "{{.ID}}" --filter "label=$DOCKER_STOP_OPT_IN_LABEL=true" | tr '\n' ' ')"
 CONTAINERS_TOTAL="$(docker ps --format "{{.ID}}" | wc -l)"
 echo "$CONTAINERS_TOTAL containers running"
 

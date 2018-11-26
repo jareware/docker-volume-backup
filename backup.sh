@@ -9,7 +9,7 @@ source env.sh
 function info {
   bold="\033[1m"
   reset="\033[0m"
-  echo -e "\n$bold[INFO] $1\n$reset"
+  echo -e "\n$bold[INFO] $1$reset\n"
 }
 
 info "Backup starting"

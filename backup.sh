@@ -55,6 +55,7 @@ fi
 info "Cleaning up"
 rm -vf "$BACKUP_FILENAME"
 
+info "Collecting metrics"
 TIME_FINISH="$(date +%s.%N)"
 INFLUX_LINE="$INFLUXDB_MEASUREMENT\
 ,host=$BACKUP_HOSTNAME\
@@ -67,10 +68,10 @@ INFLUX_LINE="$INFLUXDB_MEASUREMENT\
 ,time_compress=$(perl -E "say $TIME_BACKED_UP - $TIME_BACK_UP")\
 ,time_upload=$(perl -E "say $TIME_UPLOADED - $TIME_UPLOAD")\
 "
+echo "$INFLUX_LINE" | sed 's/ /,/g' | tr , '\n'
+
 if [ ! -z "$INFLUXDB_URL" ]; then
   info "Shipping metrics"
-  echo "$INFLUX_LINE" | tr , '\n'
-  echo
   curl \
     --silent \
     --include \

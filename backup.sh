@@ -38,9 +38,9 @@ if [[ ! "$CONTAINERS_TO_STOP" =~ ^\ *$ ]]; then
   docker start $CONTAINERS_TO_STOP
 fi
 
-info "Waiting before upload"
-echo "Sleeping $BACKUP_UPLOAD_WAIT_SECONDS seconds..."
-sleep "$BACKUP_UPLOAD_WAIT_SECONDS"
+info "Waiting before processing"
+echo "Sleeping $BACKUP_WAIT_SECONDS seconds..."
+sleep "$BACKUP_WAIT_SECONDS"
 
 TIME_UPLOAD="0"
 TIME_UPLOADED="0"
@@ -64,7 +64,7 @@ INFLUX_LINE="$INFLUXDB_MEASUREMENT\
 ,containers_total=$CONTAINERS_TOTAL\
 ,containers_stopped=$CONTAINERS_STOPPED\
 ,time_wall=$(perl -E "say $TIME_FINISH - $TIME_START")\
-,time_total=$(perl -E "say $TIME_FINISH - $TIME_START - $BACKUP_UPLOAD_WAIT_SECONDS")\
+,time_total=$(perl -E "say $TIME_FINISH - $TIME_START - $BACKUP_WAIT_SECONDS")\
 ,time_compress=$(perl -E "say $TIME_BACKED_UP - $TIME_BACK_UP")\
 ,time_upload=$(perl -E "say $TIME_UPLOADED - $TIME_UPLOAD")\
 "

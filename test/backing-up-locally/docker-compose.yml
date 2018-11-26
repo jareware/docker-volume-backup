@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+
+  dashboard:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+  backup:
+    build: ../..
+    environment:
+      BACKUP_CRON_EXPRESSION: "* * * * *"
+      BACKUP_SOURCES: /mnt/grafana
+      BACKUP_ARCHIVE: /mnt/backups
+    volumes:
+      - grafana-data:/mnt/grafana:ro
+      - ./backups:/mnt/backups
+
+volumes:
+  grafana-data:

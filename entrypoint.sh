@@ -28,10 +28,12 @@ cat <<EOF > .aws/credentials
 aws_access_key_id = ${AWS_ACCESS_KEY_ID}
 aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}
 EOF
+if [ ! -z "$AWS_DEFAULT_REGION" ]; then
 cat <<EOF > .aws/config
 [default]
 region = ${AWS_DEFAULT_REGION}
 EOF
+fi
 
 # Add our cron entry, and direct stdout & stderr to Docker commands stdout
 echo "Installing cron.d entry: docker-volume-backup-companion"

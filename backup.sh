@@ -97,4 +97,4 @@ if [ ! -z "$INFLUXDB_URL" ]; then
 fi
 
 info "Backup finished"
-echo "Script will now exit"
+echo "Will wait for next scheduled backup"

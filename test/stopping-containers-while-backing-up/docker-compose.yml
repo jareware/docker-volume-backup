@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+
+  dashboard:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    labels:
+      - "docker-volume-backup-companion.stop-during-backup=true"
+
+  backup:
+    build: ../..
+    environment:
+      BACKUP_CRON_EXPRESSION: "* * * * *"
+      BACKUP_SOURCES: /mnt/grafana
+      AWS_S3_BUCKET_NAME: docker-volume-backup-companion-test
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - grafana-data:/mnt/grafana:ro
+
+volumes:
+  grafana-data:

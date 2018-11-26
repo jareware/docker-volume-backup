@@ -53,7 +53,7 @@ if [ ! -z "$BACKUP_BUCKET_NAME" ]; then
 fi
 
 info "Cleaning up"
-rm -v "$BACKUP_FILENAME"
+rm -vf "$BACKUP_FILENAME"
 
 TIME_FINISH="$(date +%s.%N)"
 INFLUX_LINE="$INFLUXDB_MEASUREMENT\

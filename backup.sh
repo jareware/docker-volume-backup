@@ -14,18 +14,19 @@ function info {
 
 info "Backup starting"
 TIME_START="$(date +%s.%N)"
-CONTAINERS_TO_STOP="$(docker ps --format "{{.ID}}" --filter "label=$DOCKER_STOP_OPT_IN_LABEL=true" | tr '\n' ' ')"
+TEMPFILE="$(mktemp)"
+docker ps --format "{{.ID}}" --filter "label=$DOCKER_STOP_OPT_IN_LABEL=true" > "$TEMPFILE"
+CONTAINERS_TO_STOP="$(cat $TEMPFILE | tr '\n' ' ')"
+CONTAINERS_TO_STOP_TOTAL="$(cat $TEMPFILE | wc -l)"
 CONTAINERS_TOTAL="$(docker ps --format "{{.ID}}" | wc -l)"
-echo "$CONTAINERS_TOTAL containers running"
+rm "$TEMPFILE"
+echo "$CONTAINERS_TOTAL containers running on host in total"
+echo "$CONTAINERS_TO_STOP_TOTAL containers marked with label \"$DOCKER_STOP_OPT_IN_LABEL=true\""
 
-if [[ ! "$CONTAINERS_TO_STOP" =~ ^\ *$ ]]; then
+if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then
   info "Stopping containers"
-  TEMPFILE="$(mktemp)"
-  docker stop $CONTAINERS_TO_STOP | tee "$TEMPFILE"
-  CONTAINERS_STOPPED="$(cat $TEMPFILE | wc -l)"
-  rm "$TEMPFILE"
+  docker stop $CONTAINERS_TO_STOP
 fi
-CONTAINERS_STOPPED=${CONTAINERS_STOPPED:-0}
 
 info "Creating backup"
 TIME_BACK_UP="$(date +%s.%N)"
@@ -33,8 +34,8 @@ tar -czvf "$BACKUP_FILENAME" $BACKUP_SOURCES # allow the var to expand, in case 
 BACKUP_SIZE="$(du --bytes $BACKUP_FILENAME | sed 's/\s.*$//')"
 TIME_BACKED_UP="$(date +%s.%N)"
 
-if [[ ! "$CONTAINERS_TO_STOP" =~ ^\ *$ ]]; then
-  info "Starting containers"
+if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then
+  info "Starting containers back up"
   docker start $CONTAINERS_TO_STOP
 fi
 
@@ -69,7 +70,7 @@ INFLUX_LINE="$INFLUXDB_MEASUREMENT\
 \
  size_compressed_bytes=$BACKUP_SIZE\
 ,containers_total=$CONTAINERS_TOTAL\
-,containers_stopped=$CONTAINERS_STOPPED\
+,containers_stopped=$CONTAINERS_TO_STOP_TOTAL\
 ,time_wall=$(perl -E "say $TIME_FINISH - $TIME_START")\
 ,time_total=$(perl -E "say $TIME_FINISH - $TIME_START - $BACKUP_WAIT_SECONDS")\
 ,time_compress=$(perl -E "say $TIME_BACKED_UP - $TIME_BACK_UP")\

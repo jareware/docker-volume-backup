@@ -31,7 +31,7 @@ services:
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
       AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
-      BACKUP_ARCHIVE_PATH: /archive
+      BACKUP_ARCHIVE: /archive
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro" # allow Docker commands from within the container
       - "foo-data:/backup/foo-backup:ro"

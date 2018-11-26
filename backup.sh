@@ -52,8 +52,15 @@ if [ ! -z "$BACKUP_BUCKET_NAME" ]; then
   TIME_UPLOADED="$(date +%s.%N)"
 fi
 
-info "Cleaning up"
-rm -vf "$BACKUP_FILENAME"
+if [ ! -z "$BACKUP_ARCHIVE_PATH" ]; then
+  info "Archiving backup"
+  mv -v "$BACKUP_FILENAME" "$BACKUP_ARCHIVE_PATH/$BACKUP_FILENAME"
+fi
+
+if [ -f "$BACKUP_FILENAME" ]; then
+  info "Cleaning up"
+  rm -vf "$BACKUP_FILENAME"
+fi
 
 info "Collecting metrics"
 TIME_FINISH="$(date +%s.%N)"

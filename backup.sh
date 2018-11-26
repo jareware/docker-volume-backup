@@ -52,10 +52,10 @@ sleep "$BACKUP_WAIT_SECONDS"
 
 TIME_UPLOAD="0"
 TIME_UPLOADED="0"
-if [ ! -z "$BACKUP_BUCKET_NAME" ]; then
+if [ ! -z "$AWS_S3_BUCKET_NAME" ]; then
   info "Uploading backup"
   TIME_UPLOAD="$(date +%s.%N)"
-  aws s3 cp --only-show-errors "$BACKUP_FILENAME" "s3://$BACKUP_BUCKET_NAME/"
+  aws s3 cp --only-show-errors "$BACKUP_FILENAME" "s3://$AWS_S3_BUCKET_NAME/"
   echo "Upload finished"
   TIME_UPLOADED="$(date +%s.%N)"
 fi

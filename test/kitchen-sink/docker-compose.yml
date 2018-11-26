@@ -27,7 +27,7 @@ services:
       BACKUP_CRON_EXPRESSION: "* * * * *"
       BACKUP_FILENAME: "backup-%Y-%m-%d-%H-%M-%S.tar.gz"
       BACKUP_WAIT_SECONDS: 0
-      BACKUP_BUCKET_NAME: docker-volume-backup-companion-test
+      AWS_S3_BUCKET_NAME: docker-volume-backup-companion-test
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
       AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"

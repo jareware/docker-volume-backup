@@ -42,11 +42,15 @@ info "Waiting before upload"
 echo "Sleeping $BACKUP_UPLOAD_WAIT_SECONDS seconds..."
 sleep "$BACKUP_UPLOAD_WAIT_SECONDS"
 
-info "Uploading backup"
-TIME_UPLOAD="$(date +%s.%N)"
-aws s3 cp --only-show-errors "$BACKUP_FILENAME" "s3://$BACKUP_BUCKET_NAME/"
-echo "Upload finished"
-TIME_UPLOADED="$(date +%s.%N)"
+TIME_UPLOAD="0"
+TIME_UPLOADED="0"
+if [ ! -z "$BACKUP_BUCKET_NAME" ]; then
+  info "Uploading backup"
+  TIME_UPLOAD="$(date +%s.%N)"
+  aws s3 cp --only-show-errors "$BACKUP_FILENAME" "s3://$BACKUP_BUCKET_NAME/"
+  echo "Upload finished"
+  TIME_UPLOADED="$(date +%s.%N)"
+fi
 
 info "Cleaning up"
 rm -v "$BACKUP_FILENAME"

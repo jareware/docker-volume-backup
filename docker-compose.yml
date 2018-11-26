@@ -1,0 +1,43 @@
+# To verify variable substitution from environment:
+# $ docker-compose config
+# If there's a .env file in the same directory, it will be sourced automatically
+
+version: "3"
+
+services:
+
+  foo:
+    image: ubuntu
+    command: "bash -c 'while true; do echo I am FOO | tee -a /data/log; sleep 5; done'"
+    volumes:
+      - foo-data:/data
+
+  bar:
+    image: ubuntu
+    command: "bash -c 'while true; do echo I am BAR | tee -a /data/log; sleep 5; done'"
+    volumes:
+      - bar-data:/data
+    labels:
+      - "docker-volume-backup-companion.stop-during-backup=true"
+
+  backup:
+    build: .
+    environment:
+      BACKUP_HOSTNAME: docker-volume-backup-companion
+      BACKUP_CRON_EXPRESSION: "* * * * *"
+      BACKUP_FILENAME: "backup-%Y-%m-%d-%H-%M-%S.tar.gz"
+      BACKUP_WAIT_SECONDS: 0
+      BACKUP_BUCKET_NAME: docker-volume-backup-companion-test
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
+      BACKUP_ARCHIVE_PATH: /archive
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro" # allow Docker commands from within the container
+      - "foo-data:/backup/foo-backup:ro"
+      - "bar-data:/backup/bar-backup:ro"
+      - "./archive:/archive"
+
+volumes:
+  foo-data:
+  bar-data:

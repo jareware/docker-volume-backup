@@ -14,14 +14,21 @@ function info {
 
 info "Backup starting"
 TIME_START="$(date +%s.%N)"
-TEMPFILE="$(mktemp)"
-docker ps --format "{{.ID}}" --filter "label=$DOCKER_STOP_OPT_IN_LABEL=true" > "$TEMPFILE"
-CONTAINERS_TO_STOP="$(cat $TEMPFILE | tr '\n' ' ')"
-CONTAINERS_TO_STOP_TOTAL="$(cat $TEMPFILE | wc -l)"
-CONTAINERS_TOTAL="$(docker ps --format "{{.ID}}" | wc -l)"
-rm "$TEMPFILE"
-echo "$CONTAINERS_TOTAL containers running on host in total"
-echo "$CONTAINERS_TO_STOP_TOTAL containers marked with label \"$DOCKER_STOP_OPT_IN_LABEL=true\""
+DOCKER_SOCK="/var/run/docker.sock"
+if [ -S "$DOCKER_SOCK" ]; then
+  TEMPFILE="$(mktemp)"
+  docker ps --format "{{.ID}}" --filter "label=$DOCKER_STOP_OPT_IN_LABEL=true" > "$TEMPFILE"
+  CONTAINERS_TO_STOP="$(cat $TEMPFILE | tr '\n' ' ')"
+  CONTAINERS_TO_STOP_TOTAL="$(cat $TEMPFILE | wc -l)"
+  CONTAINERS_TOTAL="$(docker ps --format "{{.ID}}" | wc -l)"
+  rm "$TEMPFILE"
+  echo "$CONTAINERS_TOTAL containers running on host in total"
+  echo "$CONTAINERS_TO_STOP_TOTAL containers marked with label \"$DOCKER_STOP_OPT_IN_LABEL=true\""
+else
+  CONTAINERS_TO_STOP_TOTAL="0"
+  CONTAINERS_TOTAL="0"
+  echo "Cannot access \"$DOCKER_SOCK\", won't look for containers to stop"
+fi
 
 if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then
   info "Stopping containers"

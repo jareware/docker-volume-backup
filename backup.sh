@@ -60,9 +60,9 @@ if [ ! -z "$BACKUP_BUCKET_NAME" ]; then
   TIME_UPLOADED="$(date +%s.%N)"
 fi
 
-if [ ! -z "$BACKUP_ARCHIVE_PATH" ]; then
+if [ ! -z "$BACKUP_ARCHIVE" ]; then
   info "Archiving backup"
-  mv -v "$BACKUP_FILENAME" "$BACKUP_ARCHIVE_PATH/$BACKUP_FILENAME"
+  mv -v "$BACKUP_FILENAME" "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
 fi
 
 if [ -f "$BACKUP_FILENAME" ]; then

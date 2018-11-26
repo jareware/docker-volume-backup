@@ -3,27 +3,14 @@
 # Exit immediately on error
 set -e
 
-# Set defaults for any missing environment variables
-BACKUP_SOURCES="${BACKUP_SOURCES:-/backup}"
-BACKUP_FILENAME="${BACKUP_FILENAME:-latest.tar.gz}"
-BACKUP_PERIOD_SECONDS="${BACKUP_PERIOD_SECONDS:-86400}" # i.e. every 24 hours
-BACKUP_UPLOAD_WAIT_SECONDS="${BACKUP_UPLOAD_WAIT_SECONDS:-30}" # to wait out the load spike of starting the containers back up
-BACKUP_HOSTNAME="${BACKUP_HOSTNAME:-$(hostname)}"
-DOCKER_STOP_OPT_IN_LABEL="${DOCKER_STOP_OPT_IN_LABEL:-docker-volume-backup-companion.stop-during-backup}"
-INFLUXDB_URL="${INFLUXDB_URL:-}"
-INFLUXDB_DB="${INFLUXDB_DB:-}"
-INFLUXDB_CREDENTIALS="${INFLUXDB_CREDENTIALS:-}"
-INFLUXDB_MEASUREMENT="${INFLUXDB_MEASUREMENT:-docker_volume_backup}"
+# Cronjobs don't inherit their env, so load from file
+source env.sh
 
 function info {
   bold="\033[1m"
   reset="\033[0m"
   echo -e "\n$bold[INFO] $1\n$reset"
 }
-
-info "Backup sleeping"
-echo "Sleeping $BACKUP_PERIOD_SECONDS seconds..."
-sleep "$BACKUP_PERIOD_SECONDS"
 
 info "Backup starting"
 TIME_START="$(date +%s.%N)"

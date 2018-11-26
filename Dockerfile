@@ -1,6 +1,7 @@
 FROM ubuntu:18.04
 
-RUN apt-get update && apt-get install -y curl cron awscli
+RUN apt-get update && apt-get install -y --no-install-recommends curl cron awscli
+RUN rm -rf /var/lib/apt/lists/*
 
 # https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-using-the-convenience-script
 RUN curl -fsSL get.docker.com -o get-docker.sh

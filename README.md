@@ -118,3 +118,12 @@ Variable | Default | Notes
 `INFLUXDB_DB` |  | Required when using `INFLUXDB_URL`; e.g. `my_database`.
 `INFLUXDB_CREDENTIALS` |  | Required when using `INFLUXDB_URL`; e.g. `user:pass`.
 `INFLUXDB_MEASUREMENT` | `docker_volume_backup` | Required when using `INFLUXDB_URL`.
+
+## Testing
+
+A bunch of test cases exist under [`test`](test/). To run them:
+
+    cd test/backing-up-locally/
+    docker-compose stop && docker-compose rm -f && docker-compose build && docker-compose up
+
+Some cases may need secrets available in the environment, e.g. for S3 uploads to work.

@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Exit immediately on error
-set -e
-
 # Cronjobs don't inherit their env, so load from file
 source env.sh
 

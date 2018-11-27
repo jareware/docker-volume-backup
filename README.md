@@ -23,7 +23,7 @@ services:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
 
   backup:
-    image: futurice/docker-volume-backup:TODO
+    image: futurice/docker-volume-backup:1.1.0
     environment:
       BACKUP_SOURCES: /mnt/grafana              # Where to read data from
       BACKUP_ARCHIVE: /mnt/backups              # Where to write backups to
@@ -51,7 +51,7 @@ services:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
 
   backup:
-    image: futurice/docker-volume-backup:TODO
+    image: futurice/docker-volume-backup:1.1.0
     environment:
       BACKUP_SOURCES: /mnt/grafana              # Where to read data from
       AWS_S3_BUCKET_NAME: my-backup-bucket      # S3 bucket which you own, and already exists
@@ -84,7 +84,7 @@ services:
       - "docker-volume-backup.stop-during-backup=true"
 
   backup:
-    image: futurice/docker-volume-backup:TODO
+    image: futurice/docker-volume-backup:1.1.0
     environment:
       BACKUP_SOURCES: /mnt/grafana              # Where to read data from
       AWS_S3_BUCKET_NAME: my-backup-bucket      # S3 bucket which you own, and already exists

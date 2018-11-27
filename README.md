@@ -136,6 +136,8 @@ The above configuration will perform a `docker exec` for the database container 
 
 Similarly, after the temp volume has been backed up, it's cleaned up with another `docker exec` in the database container, this time just invoking `rm`.
 
+If you need a more complex script for pre/post exec, consider mounting and invoking a shell script instead.
+
 ## Configuration
 
 Variable | Default | Notes

@@ -26,12 +26,9 @@ services:
 
   backup:
     image: futurice/docker-volume-backup:1.1.0
-    environment:
-      BACKUP_SOURCES: /mnt/grafana              # Where to read data from
-      BACKUP_ARCHIVE: /mnt/backups              # Where to write backups to
     volumes:
-      - grafana-data:/mnt/grafana:ro            # Mount the Grafana data volume (read-only)
-      - ./backups:/mnt/backups                  # Mount a local folder as the backup archive
+      - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
+      - ./backups:/archive                      # Mount a local folder as the backup archive
 
 volumes:
   grafana-data:
@@ -56,12 +53,11 @@ services:
   backup:
     image: futurice/docker-volume-backup:1.1.0
     environment:
-      BACKUP_SOURCES: /mnt/grafana              # Where to read data from
       AWS_S3_BUCKET_NAME: my-backup-bucket      # S3 bucket which you own, and already exists
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}   # Read AWS secrets from environment (or a .env file)
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     volumes:
-      - grafana-data:/mnt/grafana:ro            # Mount the Grafana data volume (read-only)
+      - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
 
 volumes:
   grafana-data:
@@ -90,13 +86,12 @@ services:
   backup:
     image: futurice/docker-volume-backup:1.1.0
     environment:
-      BACKUP_SOURCES: /mnt/grafana              # Where to read data from
       AWS_S3_BUCKET_NAME: my-backup-bucket      # S3 bucket which you own, and already exists
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}   # Read AWS secrets from environment (or a .env file)
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Allow use of the "stop-during-backup" label
-      - grafana-data:/mnt/grafana:ro            # Mount the Grafana data volume (read-only)
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Allow use of the "stop-during-backup" feature
+      - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
 
 volumes:
   grafana-data:

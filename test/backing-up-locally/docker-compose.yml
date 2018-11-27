@@ -13,11 +13,9 @@ services:
     build: ../..
     environment:
       BACKUP_CRON_EXPRESSION: "* * * * *"
-      BACKUP_SOURCES: /mnt/grafana
-      BACKUP_ARCHIVE: /mnt/backups
     volumes:
-      - grafana-data:/mnt/grafana:ro
-      - ./backups:/mnt/backups
+      - grafana-data:/backup/grafana-data:ro
+      - ./backups:/archive
 
 volumes:
   grafana-data:

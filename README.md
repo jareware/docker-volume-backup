@@ -6,6 +6,7 @@ Docker image for performing simple backups of Docker volumes. Main features:
 - Use full `cron` expressions for scheduling the backups
 - Backs up to local disk, [AWS S3](https://aws.amazon.com/s3/), or both
 - Optionally stops other containers for the duration of the backup, and starts them again afterward, to ensure consistent backups of things like database files, etc
+- Optionally ships backup metrics to [InfluxDB](https://docs.influxdata.com/influxdb/), for monitoring
 
 ## Examples
 

@@ -18,16 +18,16 @@ services:
     volumes:
       - bar-data:/data
     labels:
-      - "docker-volume-backup-companion.stop-during-backup=true"
+      - "docker-volume-backup.stop-during-backup=true"
 
   backup:
     build: .
     environment:
-      BACKUP_HOSTNAME: docker-volume-backup-companion
+      BACKUP_HOSTNAME: docker-volume-backup
       BACKUP_CRON_EXPRESSION: "* * * * *"
       BACKUP_FILENAME: "backup-%Y-%m-%d-%H-%M-%S.tar.gz"
       BACKUP_WAIT_SECONDS: 0
-      AWS_S3_BUCKET_NAME: docker-volume-backup-companion-test
+      AWS_S3_BUCKET_NAME: docker-volume-backup-test
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
       AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"

@@ -12,7 +12,7 @@ BACKUP_FILENAME="$(date +"${BACKUP_FILENAME:-backup-%F.tar.gz}")"
 BACKUP_ARCHIVE="${BACKUP_ARCHIVE}"
 BACKUP_WAIT_SECONDS="${BACKUP_WAIT_SECONDS:-0}"
 BACKUP_HOSTNAME="${BACKUP_HOSTNAME:-$(hostname)}"
-DOCKER_STOP_OPT_IN_LABEL="${DOCKER_STOP_OPT_IN_LABEL:-docker-volume-backup-companion.stop-during-backup}"
+DOCKER_STOP_OPT_IN_LABEL="${DOCKER_STOP_OPT_IN_LABEL:-docker-volume-backup.stop-during-backup}"
 INFLUXDB_URL="${INFLUXDB_URL:-}"
 INFLUXDB_DB="${INFLUXDB_DB:-}"
 INFLUXDB_CREDENTIALS="${INFLUXDB_CREDENTIALS:-}"
@@ -36,8 +36,8 @@ EOF
 fi
 
 # Add our cron entry, and direct stdout & stderr to Docker commands stdout
-echo "Installing cron.d entry: docker-volume-backup-companion"
-echo "$BACKUP_CRON_EXPRESSION root /root/backup.sh > /proc/1/fd/1 2>&1" > /etc/cron.d/docker-volume-backup-companion
+echo "Installing cron.d entry: docker-volume-backup"
+echo "$BACKUP_CRON_EXPRESSION root /root/backup.sh > /proc/1/fd/1 2>&1" > /etc/cron.d/docker-volume-backup
 
 # Let cron take the wheel
 echo "Starting cron in foreground with expression: $BACKUP_CRON_EXPRESSION"

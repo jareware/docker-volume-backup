@@ -185,3 +185,9 @@ A bunch of test cases exist under [`test`](test/). To run them:
     docker-compose stop && docker-compose rm -f && docker-compose build && docker-compose up
 
 Some cases may need secrets available in the environment, e.g. for S3 uploads to work.
+
+## Building
+
+New images can be conveniently built on [Docker Hub](https://hub.docker.com/r/futurice/docker-volume-backup/~/settings/automated-builds/). Use the "Trigger" button with a tag name, for example:
+
+![Docker Hub build](doc/docker-hub-build.png)

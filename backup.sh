@@ -61,7 +61,7 @@ if [ ! -z "$AWS_S3_BUCKET_NAME" ]; then
   TIME_UPLOADED="$(date +%s.%N)"
 fi
 
-if [ ! -z "$BACKUP_ARCHIVE" ]; then
+if [ -d "$BACKUP_ARCHIVE" ]; then
   info "Archiving backup"
   mv -v "$BACKUP_FILENAME" "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
 fi

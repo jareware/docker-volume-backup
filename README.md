@@ -5,7 +5,8 @@ Docker image for performing simple backups of Docker volumes. Main features:
 - Mount volumes into the container, and they'll get backed up
 - Use full `cron` expressions for scheduling the backups
 - Backs up to local disk, [AWS S3](https://aws.amazon.com/s3/), or both
-- Optionally stops other containers for the duration of the backup, and starts them again afterward, to ensure consistent backups of things like database files, etc
+- Optionally stops containers for the duration of the backup, and starts them again afterward, to ensure consistent backups
+- Optionally `docker exec`s commands before/after backing up a container, to allow easy integration with database backup tools, for example
 - Optionally ships backup metrics to [InfluxDB](https://docs.influxdata.com/influxdb/), for monitoring
 
 ## Examples
@@ -67,7 +68,7 @@ This configuration will back up to AWS S3 instead.
 
 ### Stopping containers while backing up
 
-It's not generally safe to read files to which other processes might be writing. You may end up with corrupted copies. You generally don't want corrupted backups.
+It's not generally safe to read files to which other processes might be writing. You may end up with corrupted copies.
 
 You can give the backup container access to the Docker socket, and label any containers that need to be stopped while the backup runs:
 
@@ -81,6 +82,7 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
     labels:
+      # Adding this label means this container should be stopped while it's being backed up:
       - "docker-volume-backup.stop-during-backup=true"
 
   backup:
@@ -98,6 +100,41 @@ volumes:
 ```
 
 This configuration allows you to safely back up things like databases, if you can tolerate a bit of downtime.
+
+### Pre/post backup exec
+
+If you don't want to stop the container while it's being backed up, and the container comes with a backup utility (this is true for most databases), you can label the container with commands to run before/after backing it up:
+
+```yml
+version: "3"
+
+services:
+
+  database:
+    image: influxdb:1.5.4
+    volumes:
+      - influxdb-data:/var/lib/influxdb         # This is where InfluxDB keeps its data
+      - influxdb-temp:/tmp/influxdb             # This is our temp space for the backup
+    labels:
+      # These commands will be exec'd (in the same container) before/after the backup starts:
+      - docker-volume-backup.exec-pre-backup=influxd backup -portable /tmp/influxdb
+      - docker-volume-backup.exec-post-backup=rm -rfv /tmp/influxdb
+
+  backup:
+    image: futurice/docker-volume-backup:1.1.0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Allow use of the "pre/post exec" feature
+      - influxdb-temp:/backup/influxdb:ro       # Mount the temp space so it gets backed up
+      - ./backups:/archive                      # Mount a local folder as the backup archive
+
+volumes:
+  influxdb-data:
+  influxdb-temp:
+```
+
+The above configuration will perform a `docker exec` for the database container with `influxd backup`, right before the backup runs. The resulting DB snapshot is written to a temp volume (`influxdb-temp`), which is then backed up. Note that the main InfluxDB data volume (`influxdb-data`) isn't used at all, as it'd be unsafe to read while the DB process is running.
+
+Similarly, after the temp volume has been backed up, it's cleaned up with another `docker exec` in the database container, this time just invoking `rm`.
 
 ## Configuration
 

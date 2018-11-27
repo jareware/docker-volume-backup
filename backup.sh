@@ -35,11 +35,37 @@ if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then
   docker stop $CONTAINERS_TO_STOP
 fi
 
+if [ -S "$DOCKER_SOCK" ]; then
+  TEMPFILE="$(mktemp)"
+  docker ps \
+    --filter "label=docker-volume-backup.exec-pre-backup" \
+    --format '{{.ID}} {{.Label "docker-volume-backup.exec-pre-backup"}}' \
+    > "$TEMPFILE"
+  while read line; do
+    info "Pre-exec command: $line"
+    docker exec $line
+  done < "$TEMPFILE"
+  rm "$TEMPFILE"
+fi
+
 info "Creating backup"
 TIME_BACK_UP="$(date +%s.%N)"
 tar -czvf "$BACKUP_FILENAME" $BACKUP_SOURCES # allow the var to expand, in case we have multiple sources
 BACKUP_SIZE="$(du --bytes $BACKUP_FILENAME | sed 's/\s.*$//')"
 TIME_BACKED_UP="$(date +%s.%N)"
+
+if [ -S "$DOCKER_SOCK" ]; then
+  TEMPFILE="$(mktemp)"
+  docker ps \
+    --filter "label=docker-volume-backup.exec-post-backup" \
+    --format '{{.ID}} {{.Label "docker-volume-backup.exec-post-backup"}}' \
+    > "$TEMPFILE"
+  while read line; do
+    info "Post-exec command: $line"
+    docker exec $line
+  done < "$TEMPFILE"
+  rm "$TEMPFILE"
+fi
 
 if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then
   info "Starting containers back up"

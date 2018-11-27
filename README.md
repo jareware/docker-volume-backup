@@ -157,15 +157,6 @@ Variable | Default | Notes
 `INFLUXDB_CREDENTIALS` |  | Required when using `INFLUXDB_URL`; e.g. `user:pass`.
 `INFLUXDB_MEASUREMENT` | `docker_volume_backup` | Required when using `INFLUXDB_URL`.
 
-## Testing
-
-A bunch of test cases exist under [`test`](test/). To run them:
-
-    cd test/backing-up-locally/
-    docker-compose stop && docker-compose rm -f && docker-compose build && docker-compose up
-
-Some cases may need secrets available in the environment, e.g. for S3 uploads to work.
-
 ## Metrics
 
 After the backup, the script will collect some metrics from the run. By default, they're just written out as logs. For example:
@@ -185,3 +176,12 @@ time_upload=0.56016993522644
 If so configured, they can also be shipped to an InfluxDB instance. This allows you to set up monitoring and/or alerts for them. Here's a sample visualization on Grafana:
 
 ![Backup dashboard sample](doc/backup-dashboard-sample.png)
+
+## Testing
+
+A bunch of test cases exist under [`test`](test/). To run them:
+
+    cd test/backing-up-locally/
+    docker-compose stop && docker-compose rm -f && docker-compose build && docker-compose up
+
+Some cases may need secrets available in the environment, e.g. for S3 uploads to work.

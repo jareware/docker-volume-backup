@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+
+  database:
+    image: influxdb:1.5.4
+    volumes:
+      - influxdb-data:/var/lib/influxdb
+      - influxdb-temp:/tmp/influxdb
+    labels:
+      - docker-volume-backup.exec-pre-backup=influxd backup -portable /tmp/influxdb
+      - docker-volume-backup.exec-post-backup=rm -rfv /tmp/influxdb
+
+  backup:
+    build: ../..
+    environment:
+      BACKUP_CRON_EXPRESSION: "* * * * *"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - influxdb-temp:/backup/influxdb:ro
+      - ./backups:/archive
+
+volumes:
+  influxdb-data:
+  influxdb-temp:

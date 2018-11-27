@@ -127,3 +127,23 @@ A bunch of test cases exist under [`test`](test/). To run them:
     docker-compose stop && docker-compose rm -f && docker-compose build && docker-compose up
 
 Some cases may need secrets available in the environment, e.g. for S3 uploads to work.
+
+## Metrics
+
+After the backup, the script will collect some metrics from the run. For example:
+
+```
+docker_volume_backup
+host=my-demo-host
+size_compressed_bytes=219984
+containers_total=4
+containers_stopped=1
+time_wall=61.6939337253571
+time_total=1.69393372535706
+time_compress=0.171068429946899
+time_upload=0.56016993522644
+```
+
+If so configured, these will also be shipped to an InfluxDB instance. This allows you to set up monitoring and/or alerts for them. Here's a sample visualization on Grafana:
+
+![Backup dashboard sample](doc/backup-dashboard-sample.png)

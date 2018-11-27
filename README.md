@@ -17,6 +17,7 @@ Say you're running some dashboards with [Grafana](https://grafana.com/) and want
 version: "3"
 
 services:
+
   dashboard:
     image: grafana/grafana:5.3.4
     volumes:
@@ -45,6 +46,7 @@ Off-site backups are better, though:
 version: "3"
 
 services:
+
   dashboard:
     image: grafana/grafana:5.3.4
     volumes:
@@ -76,6 +78,7 @@ You can give the backup container access to the Docker socket, and label any con
 version: "3"
 
 services:
+
   dashboard:
     image: grafana/grafana:5.3.4
     volumes:

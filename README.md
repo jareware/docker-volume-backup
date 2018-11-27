@@ -98,3 +98,23 @@ volumes:
 ```
 
 This configuration allows you to safely back up things like databases, if you can tolerate a bit of downtime.
+
+## Configuration
+
+Variable | Default | Notes
+--- | --- | ---
+`BACKUP_SOURCES` | `/backup` | Where to read data from. This can be a space-separated list if you need to back up multiple paths, when mounting multiple volumes for example. On the other hand, you can also just mount multiple volumes under `/backup` to have all of them backed up.
+`BACKUP_CRON_EXPRESSION` | `@daily` | Standard debian-flavored `cron` expression for when the backup should run. Use e.g. `0 4 * * *` to back up at 4 AM every night. See the [man page](http://man7.org/linux/man-pages/man8/cron.8.html) or [crontab.guru](https://crontab.guru/) for more.
+`BACKUP_FILENAME` | `backup-%Y-%m-%d.tar.gz` | File name template for the backup file. Is passed through `date` for formatting. For example, `%Y-%m-%d-%H-%M-%S.tar.gz` would produce files that look like `2018-11-27-12-01-14.tar.gz`. See the [man page](http://man7.org/linux/man-pages/man1/date.1.html) for more.
+`BACKUP_ARCHIVE` | `/archive` | When this path is available within the container (i.e. you've mounted a Docker volume there), a finished backup file will get archived there after each run.
+`BACKUP_WAIT_SECONDS` | `0` | The backup script will sleep this many seconds between re-starting stopped containers, and proceeding with archiving/uploading the backup. This can be useful if you don't want the load/network spike of a large upload immediately after the load/network spike of container startup.
+`BACKUP_HOSTNAME` | `$(hostname)` | Name of the host (i.e. Docker container) in which the backup runs. Mostly useful if you want a specific hostname to be associated with backup metrics (see InfluxDB support).
+`DOCKER_STOP_OPT_IN_LABEL` | `docker-volume-backup.stop-during-backup` | Adding this label with the value `true` to other containers causes the backup script to stop them before the backup runs, and starting them back up after the backup has ran. This will only work if you also expose the Docker daemon via your `/var/run/docker.sock` into the backup container. See examples.
+`AWS_S3_BUCKET_NAME` |  | When provided, the resulting backup file will be uploaded to this S3 bucket after the backup has ran.
+`AWS_ACCESS_KEY_ID` |  | Required when using `AWS_S3_BUCKET_NAME`.
+`AWS_SECRET_ACCESS_KEY` |  | Required when using `AWS_S3_BUCKET_NAME`.
+`AWS_DEFAULT_REGION` |  | Optional when using `AWS_S3_BUCKET_NAME`. Allows you to override the AWS CLI default region. Usually not needed.
+`INFLUXDB_URL` |  | When provided, backup metrics will be sent to an InfluxDB instance at this URL, e.g. `https://influxdb.example.com`.
+`INFLUXDB_DB` |  | Required when using `INFLUXDB_URL`; e.g. `my_database`.
+`INFLUXDB_CREDENTIALS` |  | Required when using `INFLUXDB_URL`; e.g. `user:pass`.
+`INFLUXDB_MEASUREMENT` | `docker_volume_backup` | Required when using `INFLUXDB_URL`.

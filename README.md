@@ -1,4 +1,4 @@
-# docker-volume-backup-companion
+# docker-volume-backup
 
 Docker image for performing simple backups of Docker volumes. Main features:
 
@@ -23,7 +23,7 @@ services:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
 
   backup:
-    image: futurice/docker-volume-backup-companion:TODO
+    image: futurice/docker-volume-backup:TODO
     environment:
       BACKUP_SOURCES: /mnt/grafana              # Where to read data from
       BACKUP_ARCHIVE: /mnt/backups              # Where to write backups to
@@ -51,7 +51,7 @@ services:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
 
   backup:
-    image: futurice/docker-volume-backup-companion:TODO
+    image: futurice/docker-volume-backup:TODO
     environment:
       BACKUP_SOURCES: /mnt/grafana              # Where to read data from
       AWS_S3_BUCKET_NAME: my-backup-bucket      # S3 bucket which you own, and already exists
@@ -81,10 +81,10 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
     labels:
-      - "docker-volume-backup-companion.stop-during-backup=true"
+      - "docker-volume-backup.stop-during-backup=true"
 
   backup:
-    image: futurice/docker-volume-backup-companion:TODO
+    image: futurice/docker-volume-backup:TODO
     environment:
       BACKUP_SOURCES: /mnt/grafana              # Where to read data from
       AWS_S3_BUCKET_NAME: my-backup-bucket      # S3 bucket which you own, and already exists

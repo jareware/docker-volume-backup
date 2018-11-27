@@ -14,7 +14,7 @@ services:
     environment:
       BACKUP_CRON_EXPRESSION: "* * * * *"
       BACKUP_SOURCES: /mnt/grafana
-      AWS_S3_BUCKET_NAME: docker-volume-backup-companion-test
+      AWS_S3_BUCKET_NAME: docker-volume-backup-test
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     volumes:

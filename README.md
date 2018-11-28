@@ -64,7 +64,7 @@ volumes:
   grafana-data:
 ```
 
-This configuration will back up to AWS S3 instead.
+This configuration will back up to AWS S3 instead. See below for additional tips about [S3 Bucket setup](#s3-bucket-setup).
 
 ### Stopping containers while backing up
 
@@ -176,6 +176,36 @@ time_upload=0.56016993522644
 If so configured, they can also be shipped to an InfluxDB instance. This allows you to set up monitoring and/or alerts for them. Here's a sample visualization on Grafana:
 
 ![Backup dashboard sample](doc/backup-dashboard-sample.png)
+
+## S3 Bucket setup
+
+Amazon S3 has [Versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) and [Object Lifecycle Management](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) features that can be useful for backups.
+
+First, you can enable versioning for your backup bucket:
+
+![S3 versioning](doc/s3-versioning.png)
+
+Then, you can change your backup filename to a static one, for example:
+
+```yml
+environment:
+  BACKUP_FILENAME: latest.tar.gz
+```
+
+This allows you to retain previous versions of the backup file, but the _most recent_ version is always available with the same filename:
+
+    $ aws s3 cp s3://my-backup-bucket/latest.tar.gz .
+    download: s3://my-backup-bucket/latest.tar.gz to ./latest.tar.gz
+
+To make sure your bucket doesn't continue to grow indefinitely, you can enable some lifecycle rules:
+
+![S3 lifecycle](doc/s3-lifecycle.png)
+
+These rules will:
+
+- Move non-latest backups to a cheaper, long-term storage class ([Glacier](https://aws.amazon.com/glacier/))
+- Permanently remove backups after a year
+- Still always keep the latest backup available (even after a year has passed)
 
 ## Testing
 

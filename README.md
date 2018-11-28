@@ -26,7 +26,7 @@ services:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
 
   backup:
-    image: futurice/docker-volume-backup:1.1.0
+    image: futurice/docker-volume-backup:2.0.0
     volumes:
       - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
       - ./backups:/archive                      # Mount a local folder as the backup archive
@@ -52,7 +52,7 @@ services:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
 
   backup:
-    image: futurice/docker-volume-backup:1.1.0
+    image: futurice/docker-volume-backup:2.0.0
     environment:
       AWS_S3_BUCKET_NAME: my-backup-bucket      # S3 bucket which you own, and already exists
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}   # Read AWS secrets from environment (or a .env file)
@@ -86,7 +86,7 @@ services:
       - "docker-volume-backup.stop-during-backup=true"
 
   backup:
-    image: futurice/docker-volume-backup:1.1.0
+    image: futurice/docker-volume-backup:2.0.0
     environment:
       AWS_S3_BUCKET_NAME: my-backup-bucket      # S3 bucket which you own, and already exists
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}   # Read AWS secrets from environment (or a .env file)
@@ -121,7 +121,7 @@ services:
       - docker-volume-backup.exec-post-backup=rm -rfv /tmp/influxdb
 
   backup:
-    image: futurice/docker-volume-backup:1.1.0
+    image: futurice/docker-volume-backup:2.0.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Allow use of the "pre/post exec" feature
       - influxdb-temp:/backup/influxdb:ro       # Mount the temp space so it gets backed up

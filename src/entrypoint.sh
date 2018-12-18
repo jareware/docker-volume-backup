@@ -21,7 +21,7 @@ chmod a+x env.sh
 source env.sh
 
 # Configure AWS CLI
-mkdir .aws
+mkdir -p .aws
 cat <<EOF > .aws/credentials
 [default]
 aws_access_key_id = ${AWS_ACCESS_KEY_ID}

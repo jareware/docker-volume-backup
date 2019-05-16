@@ -22,11 +22,13 @@ source env.sh
 
 # Configure AWS CLI
 mkdir -p .aws
+if [ ! -z "$AWS_ACCESS_KEY_ID" ]; then
 cat <<EOF > .aws/credentials
 [default]
 aws_access_key_id = ${AWS_ACCESS_KEY_ID}
 aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}
 EOF
+fi
 if [ ! -z "$AWS_DEFAULT_REGION" ]; then
 cat <<EOF > .aws/config
 [default]

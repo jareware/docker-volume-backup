@@ -39,6 +39,11 @@ fi
 # Add our cron entry, and direct stdout & stderr to Docker commands stdout
 echo "Installing cron.d entry: docker-volume-backup"
 echo "$BACKUP_CRON_EXPRESSION root /root/backup.sh > /proc/1/fd/1 2>&1" > /etc/cron.d/docker-volume-backup
+echo -e "\n" >> /etc/cron.d/docker-volume-backup
+
+# Remove line from PAM config because cron won't run otherwise on AWS EC2 Linux
+echo "Editing /etc/pam.d/cron"
+sed -i '/session    required     pam_loginuid.so/c\#session    required   pam_loginuid.so' /etc/pam.d/cron
 
 # Let cron take the wheel
 echo "Starting cron in foreground with expression: $BACKUP_CRON_EXPRESSION"

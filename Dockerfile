@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-RUN apt-get update && apt-get install -y --no-install-recommends curl cron awscli
+RUN apt-get update && apt-get install -y --no-install-recommends curl cron awscli less vim
 RUN rm -rf /var/lib/apt/lists/*
 
 # https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-using-the-convenience-script

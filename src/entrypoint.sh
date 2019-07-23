@@ -5,6 +5,7 @@ set -e
 
 # Write cronjob env to file, fill in sensible defaults, and read them back in
 cat <<EOF > env.sh
+BACKUP_IDENT="${BACKUP_IDENT:-true}"
 BACKUP_SOURCES="${BACKUP_SOURCES:-/backup}"
 BACKUP_CRON_EXPRESSION="${BACKUP_CRON_EXPRESSION:-@daily}"
 AWS_S3_BUCKET_NAME="${AWS_S3_BUCKET_NAME:-}"

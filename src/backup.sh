@@ -14,7 +14,7 @@ TIME_START="$(date +%s.%N)"
 DOCKER_SOCK="/var/run/docker.sock"
 if [ -S "$DOCKER_SOCK" ]; then
   TEMPFILE="$(mktemp)"
-  docker ps --format "{{.ID}}" --filter "label=docker-volume-backup.stop-during-backup=true" > "$TEMPFILE"
+  docker ps --format "{{.ID}}" --filter "label=docker-volume-backup.stop-during-backup=${BACKUP_IDENT}" > "$TEMPFILE"
   CONTAINERS_TO_STOP="$(cat $TEMPFILE | tr '\n' ' ')"
   CONTAINERS_TO_STOP_TOTAL="$(cat $TEMPFILE | wc -l)"
   CONTAINERS_TOTAL="$(docker ps --format "{{.ID}}" | wc -l)"

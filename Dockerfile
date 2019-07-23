@@ -1,6 +1,6 @@
-FROM ubuntu:18.04
+FROM alpine
 
-RUN apt-get update && apt-get install -y --no-install-recommends curl cron awscli
+RUN apk update && apk install -y --no-install-recommends curl cron awscli
 RUN rm -rf /var/lib/apt/lists/*
 
 # https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-using-the-convenience-script

@@ -47,6 +47,7 @@ if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then
 fi
 
 info "Creating backup"
+BACKUP_FILENAME=$(date +"$BACKUP_FILENAME_TEMPLATE")
 TIME_BACK_UP="$(date +%s.%N)"
 tar -czf "$BACKUP_FILENAME" $BACKUP_SOURCES # allow the var to expand, in case we have multiple sources
 BACKUP_SIZE="$(du --bytes $BACKUP_FILENAME | sed 's/\s.*$//')"

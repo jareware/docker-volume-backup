@@ -14,7 +14,7 @@ TIME_START="$(date +%s.%N)"
 DOCKER_SOCK="/var/run/docker.sock"
 if [ -S "$DOCKER_SOCK" ]; then
   TEMPFILE="$(mktemp)"
-  docker ps --format "{{.ID}}" --filter "label=docker-volume-backup.stop-during-backup=${BACKUP_IDENT}" > "$TEMPFILE"
+  docker ps --format "{{.ID}}" --filter "label=docker-volume-backup.stop-during-backup=$BACKUP_IDENT" > "$TEMPFILE"
   CONTAINERS_TO_STOP="$(cat $TEMPFILE | tr '\n' ' ')"
   CONTAINERS_TO_STOP_TOTAL="$(cat $TEMPFILE | wc -l)"
   CONTAINERS_TOTAL="$(docker ps --format "{{.ID}}" | wc -l)"
@@ -27,10 +27,6 @@ else
   echo "Cannot access \"$DOCKER_SOCK\", won't look for containers to stop"
 fi
 
-if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then
-  info "Stopping containers"
-  docker stop $CONTAINERS_TO_STOP
-fi
 
 if [ -S "$DOCKER_SOCK" ]; then
   TEMPFILE="$(mktemp)"
@@ -45,11 +41,21 @@ if [ -S "$DOCKER_SOCK" ]; then
   rm "$TEMPFILE"
 fi
 
+if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then
+  info "Stopping containers"
+  docker stop $CONTAINERS_TO_STOP
+fi
+
 info "Creating backup"
 TIME_BACK_UP="$(date +%s.%N)"
-tar -czvf "$BACKUP_FILENAME" $BACKUP_SOURCES # allow the var to expand, in case we have multiple sources
+tar -czf "$BACKUP_FILENAME" $BACKUP_SOURCES # allow the var to expand, in case we have multiple sources
 BACKUP_SIZE="$(du --bytes $BACKUP_FILENAME | sed 's/\s.*$//')"
 TIME_BACKED_UP="$(date +%s.%N)"
+
+if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then
+  info "Starting containers back up"
+  docker start $CONTAINERS_TO_STOP
+fi
 
 if [ -S "$DOCKER_SOCK" ]; then
   TEMPFILE="$(mktemp)"
@@ -62,11 +68,6 @@ if [ -S "$DOCKER_SOCK" ]; then
     docker exec $line
   done < "$TEMPFILE"
   rm "$TEMPFILE"
-fi
-
-if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then
-  info "Starting containers back up"
-  docker start $CONTAINERS_TO_STOP
 fi
 
 info "Waiting before processing"

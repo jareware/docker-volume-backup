@@ -83,7 +83,7 @@ services:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
     labels:
       # Adding this label means this container should be stopped while it's being backed up:
-      - "docker-volume-backup.stop-during-backup=true"
+      - "docker-volume-backup.stop-during-backup=grafana" # should be the same was BACKUP_IDENT
 
   backup:
     image: futurice/docker-volume-backup:2.0.0
@@ -91,6 +91,7 @@ services:
       AWS_S3_BUCKET_NAME: my-backup-bucket      # S3 bucket which you own, and already exists
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}   # Read AWS secrets from environment (or a .env file)
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      BACKUP_IDENT=grafana # identifier so the container knows which other containers should be shutdown
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Allow use of the "stop-during-backup" feature
       - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
@@ -146,6 +147,7 @@ Variable | Default | Notes
 `BACKUP_CRON_EXPRESSION` | `@daily` | Standard debian-flavored `cron` expression for when the backup should run. Use e.g. `0 4 * * *` to back up at 4 AM every night. See the [man page](http://man7.org/linux/man-pages/man8/cron.8.html) or [crontab.guru](https://crontab.guru/) for more.
 `BACKUP_FILENAME` | `backup-%Y-%m-%dT%H-%M-%S.tar.gz` | File name template for the backup file. Is passed through `date` for formatting. See the [man page](http://man7.org/linux/man-pages/man1/date.1.html) for more.
 `BACKUP_ARCHIVE` | `/archive` | When this path is available within the container (i.e. you've mounted a Docker volume there), a finished backup file will get archived there after each run.
+`BACKUP_IDENT` | `true` | If you want to make multiple backups on the same machine, you can set an IDENT so that the nextcloud backup wont also shutdown the grafana containers for example.
 `BACKUP_WAIT_SECONDS` | `0` | The backup script will sleep this many seconds between re-starting stopped containers, and proceeding with archiving/uploading the backup. This can be useful if you don't want the load/network spike of a large upload immediately after the load/network spike of container startup.
 `BACKUP_HOSTNAME` | `$(hostname)` | Name of the host (i.e. Docker container) in which the backup runs. Mostly useful if you want a specific hostname to be associated with backup metrics (see InfluxDB support).
 `AWS_S3_BUCKET_NAME` |  | When provided, the resulting backup file will be uploaded to this S3 bucket after the backup has ran.

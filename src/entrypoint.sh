@@ -8,7 +8,7 @@ cat <<EOF > env.sh
 BACKUP_SOURCES="${BACKUP_SOURCES:-/backup}"
 BACKUP_CRON_EXPRESSION="${BACKUP_CRON_EXPRESSION:-@daily}"
 AWS_S3_BUCKET_NAME="${AWS_S3_BUCKET_NAME:-}"
-BACKUP_FILENAME="$(date +"${BACKUP_FILENAME:-backup-%Y-%m-%dT%H-%M-%S.tar.gz}")"
+BACKUP_FILENAME="\$(date +"${BACKUP_FILENAME:-backup-%Y-%m-%dT%H-%M-%S.tar.gz}")"
 BACKUP_ARCHIVE="${BACKUP_ARCHIVE:-/archive}"
 BACKUP_WAIT_SECONDS="${BACKUP_WAIT_SECONDS:-0}"
 BACKUP_HOSTNAME="${BACKUP_HOSTNAME:-$(hostname)}"
@@ -22,11 +22,13 @@ source env.sh
 
 # Configure AWS CLI
 mkdir -p .aws
+if [ ! -z "$AWS_ACCESS_KEY_ID" ]; then
 cat <<EOF > .aws/credentials
 [default]
 aws_access_key_id = ${AWS_ACCESS_KEY_ID}
 aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}
 EOF
+fi
 if [ ! -z "$AWS_DEFAULT_REGION" ]; then
 cat <<EOF > .aws/config
 [default]
@@ -37,6 +39,11 @@ fi
 # Add our cron entry, and direct stdout & stderr to Docker commands stdout
 echo "Installing cron.d entry: docker-volume-backup"
 echo "$BACKUP_CRON_EXPRESSION root /root/backup.sh > /proc/1/fd/1 2>&1" > /etc/cron.d/docker-volume-backup
+echo -e "\n" >> /etc/cron.d/docker-volume-backup
+
+# Remove line from PAM config because cron won't run otherwise on AWS EC2 Linux
+echo "Editing /etc/pam.d/cron"
+sed -i '/session    required     pam_loginuid.so/c\#session    required   pam_loginuid.so' /etc/pam.d/cron
 
 # Let cron take the wheel
 echo "Starting cron in foreground with expression: $BACKUP_CRON_EXPRESSION"

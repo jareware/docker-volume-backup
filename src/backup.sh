@@ -76,10 +76,11 @@ sleep "$BACKUP_WAIT_SECONDS"
 TIME_UPLOAD="0"
 TIME_UPLOADED="0"
 if [ ! -z "$AWS_S3_BUCKET_NAME" ]; then
+  [[ -n "$AWS_ENDPOINT_URL" ]] && AWS_ENDPOINT_OPT="$AWS_ENDPOINT_OPT --endpoint-url $AWS_ENDPOINT_URL"
   info "Uploading backup to S3"
   echo "Will upload to bucket \"$AWS_S3_BUCKET_NAME\""
   TIME_UPLOAD="$(date +%s.%N)"
-  aws s3 cp --only-show-errors "$BACKUP_FILENAME" "s3://$AWS_S3_BUCKET_NAME/"
+  aws ${AWS_ENDPOINT_OPT} s3 cp --only-show-errors "$BACKUP_FILENAME" "s3://$AWS_S3_BUCKET_NAME/"
   echo "Upload finished"
   TIME_UPLOADED="$(date +%s.%N)"
 fi

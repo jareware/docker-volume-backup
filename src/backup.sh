@@ -81,7 +81,7 @@ if [ ! -z "$AWS_S3_BUCKET_NAME" ]; then
   info "Uploading backup to S3"
   echo "Will upload to bucket \"$AWS_S3_BUCKET_NAME\""
   TIME_UPLOAD="$(date +%s.%N)"
-  aws s3 cp --only-show-errors "$BACKUP_FILENAME" "s3://$AWS_S3_BUCKET_NAME/"
+  aws $AWS_EXTRA_ARGS s3 cp --only-show-errors "$BACKUP_FILENAME" "s3://$AWS_S3_BUCKET_NAME/"
   echo "Upload finished"
   TIME_UPLOADED="$(date +%s.%N)"
 fi

@@ -46,6 +46,7 @@ if [ -S "$DOCKER_SOCK" ]; then
 fi
 
 info "Creating backup"
+BACKUP_FILENAME="$(date +"${BACKUP_FILENAME:-backup-%Y-%m-%dT%H-%M-%S.tar.gz}")"
 TIME_BACK_UP="$(date +%s.%N)"
 tar -czvf "$BACKUP_FILENAME" $BACKUP_SOURCES # allow the var to expand, in case we have multiple sources
 BACKUP_SIZE="$(du --bytes $BACKUP_FILENAME | sed 's/\s.*$//')"

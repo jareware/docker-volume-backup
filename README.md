@@ -185,6 +185,7 @@ Variable | Default | Notes
 `INFLUXDB_DB` |  | Required when using `INFLUXDB_URL`; e.g. `my_database`.
 `INFLUXDB_CREDENTIALS` |  | Required when using `INFLUXDB_URL`; e.g. `user:pass`.
 `INFLUXDB_MEASUREMENT` | `docker_volume_backup` | Required when using `INFLUXDB_URL`.
+`TZ` | `UTC` | Which timezone should `cron` use, e.g. `America/New_York` or `Europe/Warsaw`. See [full list of available time zones](http://manpages.ubuntu.com/manpages/bionic/man3/DateTime::TimeZone::Catalog.3pm.html).
 
 ## Metrics
 

@@ -206,7 +206,18 @@ If so configured, they can also be shipped to an InfluxDB instance. This allows 
 
 ![Backup dashboard sample](doc/backup-dashboard-sample.png)
 
-## S3 Bucket setup
+## Automatic backup rotation
+
+You probably don't want to keep all backups forever. A more common strategy is to hold onto a few recent ones, and remove older ones as they become irrelevant. There's no built-in support for this in `docker-volume-backup`, but it's simple enough to set up externally.
+
+### Rotation for local backups
+
+Check out these utilities, for example:
+
+* https://rotate-backups.readthedocs.io/en/latest/
+* https://github.com/xolox/python-rotate-backups
+
+### Rotation for S3 backups
 
 Amazon S3 has [Versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) and [Object Lifecycle Management](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) features that can be useful for backups.
 

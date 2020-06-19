@@ -5,6 +5,7 @@ Docker image for performing simple backups of Docker volumes. Main features:
 - Mount volumes into the container, and they'll get backed up
 - Use full `cron` expressions for scheduling the backups
 - Backs up to local disk, [AWS S3](https://aws.amazon.com/s3/), or both
+- Allows triggering a backup manually if needed
 - Optionally stops containers for the duration of the backup, and starts them again afterward, to ensure consistent backups
 - Optionally `docker exec`s commands before/after backing up a container, to allow easy integration with database backup tools, for example
 - Optionally ships backup metrics to [InfluxDB](https://docs.influxdata.com/influxdb/), for monitoring
@@ -65,6 +66,34 @@ volumes:
 ```
 
 This configuration will back up to AWS S3 instead. See below for additional tips about [S3 Bucket setup](#s3-bucket-setup).
+
+### Triggering a backup manually
+
+Sometimes it's useful to trigger a backup manually, e.g. right before making some big changes.
+
+This is as simple as:
+
+```
+$ docker-compose exec backup ./backup.sh
+
+[INFO] Backup starting
+
+8 containers running on host in total
+1 containers marked to be stopped during backup
+
+...
+...
+...
+
+[INFO] Backup finished
+
+Will wait for next scheduled backup
+```
+
+If you **only** want to back up manually (i.e. not on a schedule), you should either:
+
+1. Run the image without `docker-compose`, override the image entrypoint to `/root/backup.sh`, and ensure you match your env-vars with what the default `src/entrypoint.sh` would normally set up for you, or
+1. Just use `BACKUP_CRON_EXPRESSION="#"` (to ensure scheduled backup never runs) and execute `docker-compose exec backup ./backup.sh` whenever you want to run a backup
 
 ### Stopping containers while backing up
 

@@ -27,7 +27,7 @@ services:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
 
   backup:
-    image: futurice/docker-volume-backup:2.0.0
+    image: futurice/docker-volume-backup
     volumes:
       - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
       - ./backups:/archive                      # Mount a local folder as the backup archive
@@ -53,7 +53,7 @@ services:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
 
   backup:
-    image: futurice/docker-volume-backup:2.0.0
+    image: futurice/docker-volume-backup
     environment:
       AWS_S3_BUCKET_NAME: my-backup-bucket      # S3 bucket which you own, and already exists
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}   # Read AWS secrets from environment (or a .env file)

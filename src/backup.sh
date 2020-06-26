@@ -12,9 +12,14 @@ function info {
 info "Backup starting"
 TIME_START="$(date +%s.%N)"
 DOCKER_SOCK="/var/run/docker.sock"
+
+if [ ! -z "$BACKUP_CUSTOM_LABEL" ]; then
+    CUSTOM_LABEL="--filter label=$BACKUP_CUSTOM_LABEL"
+fi
+
 if [ -S "$DOCKER_SOCK" ]; then
   TEMPFILE="$(mktemp)"
-  docker ps --format "{{.ID}}" --filter "label=docker-volume-backup.stop-during-backup=true" > "$TEMPFILE"
+  docker ps --format "{{.ID}}" --filter "label=docker-volume-backup.stop-during-backup=true" $CUSTOM_LABEL > "$TEMPFILE"
   CONTAINERS_TO_STOP="$(cat $TEMPFILE | tr '\n' ' ')"
   CONTAINERS_TO_STOP_TOTAL="$(cat $TEMPFILE | wc -l)"
   CONTAINERS_TOTAL="$(docker ps --format "{{.ID}}" | wc -l)"
@@ -35,7 +40,7 @@ fi
 if [ -S "$DOCKER_SOCK" ]; then
   TEMPFILE="$(mktemp)"
   docker ps \
-    --filter "label=docker-volume-backup.exec-pre-backup" \
+    --filter "label=docker-volume-backup.exec-pre-backup" $CUSTOM_LABEL \
     --format '{{.ID}} {{.Label "docker-volume-backup.exec-pre-backup"}}' \
     > "$TEMPFILE"
   while read line; do
@@ -55,7 +60,7 @@ TIME_BACKED_UP="$(date +%s.%N)"
 if [ -S "$DOCKER_SOCK" ]; then
   TEMPFILE="$(mktemp)"
   docker ps \
-    --filter "label=docker-volume-backup.exec-post-backup" \
+    --filter "label=docker-volume-backup.exec-post-backup" $CUSTOM_LABEL \
     --format '{{.ID}} {{.Label "docker-volume-backup.exec-post-backup"}}' \
     > "$TEMPFILE"
   while read line; do

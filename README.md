@@ -263,3 +263,10 @@ Some cases may need secrets available in the environment, e.g. for S3 uploads to
 New images can be conveniently built on [Docker Hub](https://hub.docker.com/r/futurice/docker-volume-backup/~/settings/automated-builds/). Update the tag name, save, and use the "Trigger" button:
 
 ![Docker Hub build](doc/docker-hub-build.png)
+
+If this won't work, local build & push should:
+
+```
+docker build -t futurice/docker-volume-backup:2.1.0 .
+docker push futurice/docker-volume-backup:2.1.0
+```

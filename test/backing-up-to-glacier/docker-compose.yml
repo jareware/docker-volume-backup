@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+
+  dashboard:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+  backup:
+    build: ../..
+    environment:
+      BACKUP_CRON_EXPRESSION: "* * * * *"
+      BACKUP_FILENAME: glacier-test.tar.gz
+      AWS_GLACIER_VAULT_NAME: Backups
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+    volumes:
+      - grafana-data:/backup/grafana-data:ro
+
+volumes:
+  grafana-data:

@@ -52,6 +52,13 @@ tar -czvf "$BACKUP_FILENAME" $BACKUP_SOURCES # allow the var to expand, in case 
 BACKUP_SIZE="$(du --bytes $BACKUP_FILENAME | sed 's/\s.*$//')"
 TIME_BACKED_UP="$(date +%s.%N)"
 
+if [ ! -z "$GPG_PASSPHRASE" ]; then
+  info "Encrypting backup"
+  gpg --symmetric --cipher-algo aes256 --batch --passphrase "$GPG_PASSPHRASE" -o "${BACKUP_FILENAME}.gpg" $BACKUP_FILENAME
+  rm $BACKUP_FILENAME
+  BACKUP_FILENAME="${BACKUP_FILENAME}.gpg"
+fi
+
 if [ -S "$DOCKER_SOCK" ]; then
   TEMPFILE="$(mktemp)"
   docker ps \

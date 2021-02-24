@@ -96,6 +96,14 @@ if [ ! -z "$AWS_S3_BUCKET_NAME" ]; then
   echo "Upload finished"
   TIME_UPLOADED="$(date +%s.%N)"
 fi
+if [ ! -z "$AWS_GLACIER_VAULT_NAME" ]; then
+  info "Uploading backup to GLACIER"
+  echo "Will upload to vault \"$AWS_GLACIER_VAULT_NAME\""
+  TIME_UPLOAD="$(date +%s.%N)"
+  aws $AWS_EXTRA_ARGS glacier upload-archive --account-id - --vault-name "$AWS_GLACIER_VAULT_NAME" --body "$BACKUP_FILENAME"
+  echo "Upload finished"
+  TIME_UPLOADED="$(date +%s.%N)"
+fi
 
 if [ -d "$BACKUP_ARCHIVE" ]; then
   info "Archiving backup"

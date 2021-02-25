@@ -9,6 +9,7 @@ Docker image for performing simple backups of Docker volumes. Main features:
 - Optionally stops containers for the duration of the backup, and starts them again afterward, to ensure consistent backups
 - Optionally `docker exec`s commands before/after backing up a container, to allow easy integration with database backup tools, for example
 - Optionally ships backup metrics to [InfluxDB](https://docs.influxdata.com/influxdb/), for monitoring
+- Optionally encrypts backups with `gpg` before uploading
 
 ## Examples
 
@@ -177,13 +178,14 @@ Variable | Default | Notes
 `BACKUP_ARCHIVE` | `/archive` | When this path is available within the container (i.e. you've mounted a Docker volume there), a finished backup file will get archived there after each run.
 `BACKUP_WAIT_SECONDS` | `0` | The backup script will sleep this many seconds between re-starting stopped containers, and proceeding with archiving/uploading the backup. This can be useful if you don't want the load/network spike of a large upload immediately after the load/network spike of container startup.
 `BACKUP_HOSTNAME` | `$(hostname)` | Name of the host (i.e. Docker container) in which the backup runs. Mostly useful if you want a specific hostname to be associated with backup metrics (see InfluxDB support).
+`BACKUP_CUSTOM_LABEL` |  | When provided, the [start/stop](#stopping-containers-while-backing-up) and [pre/post exec](#prepost-backup-exec) logic only applies to containers with this custom label.
 `AWS_S3_BUCKET_NAME` |  | When provided, the resulting backup file will be uploaded to this S3 bucket after the backup has ran.
 `AWS_GLACIER_VAULT_NAME` |  | When provided, the resulting backup file will be uploaded to this AWS Glacier vault after the backup has ran.
 `AWS_ACCESS_KEY_ID` |  | Required when using `AWS_S3_BUCKET_NAME`.
 `AWS_SECRET_ACCESS_KEY` |  | Required when using `AWS_S3_BUCKET_NAME`.
 `AWS_DEFAULT_REGION` |  | Optional when using `AWS_S3_BUCKET_NAME`. Allows you to override the AWS CLI default region. Usually not needed.
 `AWS_EXTRA_ARGS` |  | Optional additional args for the AWS CLI. Useful for e.g. providing `--endpoint-url <url>` for S3-interopable systems, such as DigitalOcean Storage.
-`GPG_PASSPHRASE` |  | When provided the backup will be encrypted with gpg using this `passphrase`.
+`GPG_PASSPHRASE` |  | When provided, the backup will be encrypted with gpg using this `passphrase`.
 `INFLUXDB_URL` |  | When provided, backup metrics will be sent to an InfluxDB instance at this URL, e.g. `https://influxdb.example.com`.
 `INFLUXDB_DB` |  | Required when using `INFLUXDB_URL`; e.g. `my_database`.
 `INFLUXDB_CREDENTIALS` |  | Required when using `INFLUXDB_URL`; e.g. `user:pass`.

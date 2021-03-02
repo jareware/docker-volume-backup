@@ -109,8 +109,7 @@ if [ -d "$BACKUP_ARCHIVE" ]; then
   info "Archiving backup"
   mv -v "$BACKUP_FILENAME" "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
   if (($BACKUP_UID > 0)); then
-    echo "Change owner of \"$BACKUP_ARCHIVE/$BACKUP_FILENAME\" to $BACKUP_UID:$BACKUP_GID"
-    chown -R $BACKUP_UID:$BACKUP_GID "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
+    chown -v $BACKUP_UID:$BACKUP_GID "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
   fi
 fi
 

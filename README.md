@@ -23,7 +23,7 @@ version: "3"
 services:
 
   dashboard:
-    image: grafana/grafana:5.3.4
+    image: grafana/grafana:7.4.5
     volumes:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
 
@@ -49,7 +49,7 @@ version: "3"
 services:
 
   dashboard:
-    image: grafana/grafana:5.3.4
+    image: grafana/grafana:7.4.5
     volumes:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
 
@@ -108,7 +108,7 @@ version: "3"
 services:
 
   dashboard:
-    image: grafana/grafana:5.3.4
+    image: grafana/grafana:7.4.5
     volumes:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
     labels:

@@ -14,7 +14,7 @@ TIME_START="$(date +%s.%N)"
 DOCKER_SOCK="/var/run/docker.sock"
 
 if [ ! -z "$BACKUP_CUSTOM_LABEL" ]; then
-    CUSTOM_LABEL="--filter label=$BACKUP_CUSTOM_LABEL"
+  CUSTOM_LABEL="--filter label=$BACKUP_CUSTOM_LABEL"
 fi
 
 if [ -S "$DOCKER_SOCK" ]; then
@@ -108,6 +108,9 @@ fi
 if [ -d "$BACKUP_ARCHIVE" ]; then
   info "Archiving backup"
   mv -v "$BACKUP_FILENAME" "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
+  if (($BACKUP_UID > 0)); then
+    chown -v $BACKUP_UID:$BACKUP_GID "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
+  fi
 fi
 
 if [ -f "$BACKUP_FILENAME" ]; then

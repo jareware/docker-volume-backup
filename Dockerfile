@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl cron ca-ce
 RUN rm -rf /var/lib/apt/lists/*
 
 # Install awscliv2 https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html
-RUN curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip"
 RUN unzip -q awscliv2.zip
 RUN ./aws/install -i /usr/bin -b /usr/bin
 RUN rm -rf ./aws awscliv2.zip

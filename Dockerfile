@@ -4,11 +4,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl cron ca-ce
 RUN rm -rf /var/lib/apt/lists/*
 
 # Install awscliv2 https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html
-RUN curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-RUN unzip -q awscliv2.zip
-RUN ./aws/install -i /usr/bin -b /usr/bin
-RUN rm -rf ./aws awscliv2.zip
-RUN aws --version
+# ...but only for architectures that support it (see https://github.com/futurice/docker-volume-backup/issues/29)
+RUN if [ $(uname -m) = "aarch64" ] || [ $(uname -m) = "x86_64" ] ; then curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip" && unzip -q awscliv2.zip && ./aws/install -i /usr/bin -b /usr/bin && rm -rf ./aws awscliv2.zip && aws --version ; fi
 
 # https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-using-the-convenience-script
 RUN curl -fsSL get.docker.com -o get-docker.sh

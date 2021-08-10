@@ -13,7 +13,7 @@ services:
     build: ../..
     environment:
       BACKUP_CRON_EXPRESSION: "0 0 * * *"
-      ROTATE_BACKUPS: "dry-run" # You can test your configuration beforehand by peforming a "dry-run". See container logs for information on the dry-run.
+      ROTATE_BACKUPS: "true" # You can also test your configuration beforehand by peforming a "dry-run". See container logs for information on the dry-run.
     volumes:
       - grafana-data:/backup/grafana-data:ro
       - ./backups:/archive

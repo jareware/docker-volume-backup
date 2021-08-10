@@ -111,6 +111,13 @@ if [ -d "$BACKUP_ARCHIVE" ]; then
   if (($BACKUP_UID > 0)); then
     chown -v $BACKUP_UID:$BACKUP_GID "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
   fi
+  if [ "$ROTATE_BACKUP" == "true" ]; then
+    info "Rotate backups"
+    rotate-backups -c /config/.rotate-backups.ini $BACKUP_ARCHIVE
+  elif [ "$ROTATE_BACKUP" == "dry-run" ]; then
+    info "Rotate backups"
+    rotate-backups --dry-run -c /config/.rotate-backups.ini $BACKUP_ARCHIVE
+  fi
 fi
 
 if [ -f "$BACKUP_FILENAME" ]; then

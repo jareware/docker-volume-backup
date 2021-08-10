@@ -243,8 +243,7 @@ You probably don't want to keep all backups forever. A more common strategy is t
 
 ### Rotation for local backups
 
-Set the environmental variable `ROTATE_BACKUPS: "true"` for the backup container.
-The default configuration preserves seven daily, four weekly, twelve monthly and unlimited yearly backups:
+Set the environmental variable `ROTATE_BACKUPS: "true"` for the backup container. The default configuration preserves seven daily, four weekly, twelve monthly and unlimited yearly backups:
 ```
 [/archive]
 daily = 7
@@ -253,12 +252,14 @@ monthly = 12
 yearly = always
 ionice = idle
 ```
-You are free to provide a custom plan by mounting an own .rotate-backups.ini by mounting one in the backup container:
+You are free to provide a custom configuration by mounting an own .rotate-backups.ini in the backup container:
 ```
 volumes:
   - .rotate-backups.ini:/config/.rotate-backups.ini
 ```
-In order to test your custom plan, set `ROTATE_BACKUPS: "dry-run"` and see the result in the container logs when the backup routine has been triggered (either by cron or by [executing backup.sh manually](#triggering-a-backup-manually)).
+We kindly refer you to the documentation of rotate-backups for [more information on custom configurations](https://rotate-backups.readthedocs.io/en/latest/readme.html#configuration-files).
+
+In order to test your custom configuration, set `ROTATE_BACKUPS: "dry-run"` and see the result in the container logs when the backup routine has been triggered (either by cron or by [executing backup.sh manually](#triggering-a-backup-manually)).
 
 ### Rotation for S3 backups
 

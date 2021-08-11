@@ -5,7 +5,7 @@ services:
   dashboard:
     image: grafana/grafana
     ports:
-      - "3300:3000"
+      - "3000:3000"
     volumes:
       - grafana-data:/var/lib/grafana
 

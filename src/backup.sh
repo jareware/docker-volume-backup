@@ -113,10 +113,10 @@ if [ -d "$BACKUP_ARCHIVE" ]; then
   fi
   if [ "$ROTATE_BACKUPS" == "true" ]; then
     info "Rotate backups"
-    rotate-backups -c /config/.rotate-backups.ini $BACKUP_ARCHIVE
+    /usr/local/bin/rotate-backups -c /config/.rotate-backups.ini $BACKUP_ARCHIVE
   elif [ "$ROTATE_BACKUPS" == "dry-run" ]; then
     info "Rotate backups"
-    rotate-backups --dry-run -c /config/.rotate-backups.ini $BACKUP_ARCHIVE
+    /usr/local/bin/rotate-backups --dry-run -c /config/.rotate-backups.ini $BACKUP_ARCHIVE
   fi
 fi
 

@@ -9,22 +9,23 @@ function info {
   echo -e "\n$bold[INFO] $1$reset\n"
 }
 
-echo "$CHECK_MOUNT"
-if [ ! -z "$CHECK_MOUNT" ]; then
-  if mount | awk '{if ($3 == "$CHECK_MOUNT")}'; then
-    echo "continue = true"
-    cont="true"
-    echo "$cont"
+if [ "$CHECK_MOUNT" != "false" ]; then
+  TEMPFILE="$(mktemp)"
+  ping -c 1 $CHECK_MOUNT | grep '1 packets transmitted, 1 received' > "$TEMPFILE"
+  PING_RESULT="$(cat $TEMPFILE)"
+  if [ ! -z "$PING_RESULT" ]; then
+    skip="false"
+    echo "$CHECK_MOUNT is available."
   else
-    echo "continue = false"
-    cont="false"
-    echo "$cont"
+    skip="true"
+    echo "$CHECK_MOUNT is not available."
+    info "Backup skipped"
   fi
 else
-  cont="true"
+  skip="false"
 fi
 
-if [ "$cont" == "true" ]; then
+if [ "$skip" == "false" ]; then
   info "Backup starting"
   TIME_START="$(date +%s.%N)"
   DOCKER_SOCK="/var/run/docker.sock"
@@ -161,7 +162,5 @@ size_compressed_bytes=$BACKUP_SIZE\
   fi
 
   info "Backup finished"
-  echo "Will wait for next scheduled backup"
-else
-  echo "Skip backup as $CHECK_MOUNT is not mounted."
 fi
+  echo "Will wait for next scheduled backup"

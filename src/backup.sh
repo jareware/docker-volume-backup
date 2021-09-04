@@ -9,16 +9,16 @@ function info {
   echo -e "\n$bold[INFO] $1$reset\n"
 }
 
-if [ "$CHECK_MOUNT" != "false" ]; then
+if [ "$CHECK_HOST" != "false" ]; then
   TEMPFILE="$(mktemp)"
-  ping -c 1 $CHECK_MOUNT | grep '1 packets transmitted, 1 received' > "$TEMPFILE"
+  ping -c 1 $CHECK_HOST | grep '1 packets transmitted, 1 received' > "$TEMPFILE"
   PING_RESULT="$(cat $TEMPFILE)"
   if [ ! -z "$PING_RESULT" ]; then
     skip="false"
-    echo "$CHECK_MOUNT is available."
+    echo "$CHECK_HOST is available."
   else
     skip="true"
-    echo "$CHECK_MOUNT is not available."
+    echo "$CHECK_HOST is not available."
     info "Backup skipped"
   fi
 else

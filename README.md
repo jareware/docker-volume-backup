@@ -203,7 +203,7 @@ Variable | Default | Notes
 `BACKUP_WAIT_SECONDS` | `0` | The backup script will sleep this many seconds between re-starting stopped containers, and proceeding with archiving/uploading the backup. This can be useful if you don't want the load/network spike of a large upload immediately after the load/network spike of container startup.
 `BACKUP_HOSTNAME` | `$(hostname)` | Name of the host (i.e. Docker container) in which the backup runs. Mostly useful if you want a specific hostname to be associated with backup metrics (see InfluxDB support).
 `BACKUP_CUSTOM_LABEL` |  | When provided, the [start/stop](#stopping-containers-while-backing-up) and [pre/post exec](#prepost-backup-exec) logic only applies to containers with this custom label.
-`CHECK_HOST` |  | When provided, the availability of the named host will checked. If the host answers a ping, the backup if conducted as normal. Else, the backup is skipped.
+`CHECK_HOST` |  | When provided, the availability of the named host will checked. If the host answers a ping, the backup is conducted as normal. Else, the backup is skipped.
 `AWS_S3_BUCKET_NAME` |  | When provided, the resulting backup file will be uploaded to this S3 bucket after the backup has ran.
 `AWS_GLACIER_VAULT_NAME` |  | When provided, the resulting backup file will be uploaded to this AWS Glacier vault after the backup has ran.
 `AWS_ACCESS_KEY_ID` |  | Required when using `AWS_S3_BUCKET_NAME`.

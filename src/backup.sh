@@ -128,13 +128,6 @@ if [ "$skip" == "false" ]; then
     if (($BACKUP_UID > 0)); then
       chown -v $BACKUP_UID:$BACKUP_GID "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
     fi
-    if [ "$ROTATE_BACKUPS" == "true" ]; then
-      info "Rotate backups"
-      /usr/local/bin/rotate-backups -c /config/.rotate-backups.ini $BACKUP_ARCHIVE
-    elif [ "$ROTATE_BACKUPS" == "dry-run" ]; then
-      info "Rotate backups"
-      /usr/local/bin/rotate-backups --dry-run -c /config/.rotate-backups.ini $BACKUP_ARCHIVE
-    fi
   fi
 
   if [ -f "$BACKUP_FILENAME" ]; then

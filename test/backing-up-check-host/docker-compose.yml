@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+
+  dashboard:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+  backup:
+    build: ../..
+    environment:
+      BACKUP_CRON_EXPRESSION: "* * * * *"
+      CHECK_MOUNT: "192.168.0.2" # The script sends a ping to 192.168.0.2. If the host answers the ping, the backup starts. Otherwise, it is skipped. You can als provide a hostname that is resolved by means of DNS.
+    volumes:
+      - grafana-data:/backup/grafana-data:ro
+      - ./backups:/archive
+
+volumes:
+  grafana-data:

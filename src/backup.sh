@@ -107,8 +107,7 @@ fi
 
 if [ ! -z "$SCP_HOST" ]; then
   info "Uploading backup to SCP host \"$SCP_HOST\""
-  echo sshpass -p $SCP_PASSWORD scp -r $SCP_USER@$SCP_HOST:$SCP_DIRECTORY $BACKUP_FILENAME
-  sshpass -p $SCP_PASSWORD scp -r $SCP_USER@$SCP_HOST:$SCP_DIRECTORY $BACKUP_FILENAME
+  sshpass -p $SCP_PASSWORD scp -ro StrictHostKeyChecking=no $BACKUP_FILENAME $SCP_USER@$SCP_HOST:$SCP_DIRECTORY
 fi
 
 if [ -d "$BACKUP_ARCHIVE" ]; then

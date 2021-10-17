@@ -106,7 +106,8 @@ if [ ! -z "$AWS_GLACIER_VAULT_NAME" ]; then
 fi
 
 if [ ! -z "$SCP_HOST" ]; then
-  info "Uploading backup to SCP host \"$SCP_HOST\""
+  info "Uploading backup by means of SCP"
+  echo "Will upload to $SCP_HOST:$SCP_DIRECTORY"
   sshpass -p $SCP_PASSWORD scp -ro StrictHostKeyChecking=no $BACKUP_FILENAME $SCP_USER@$SCP_HOST:$SCP_DIRECTORY
 fi
 

@@ -105,6 +105,12 @@ if [ ! -z "$AWS_GLACIER_VAULT_NAME" ]; then
   TIME_UPLOADED="$(date +%s.%N)"
 fi
 
+if [ ! -z "$SCP_HOST" ]; then
+  info "Uploading backup to SCP host \"$SCP_HOST\""
+  echo sshpass -p $SCP_PASSWORD scp -r $SCP_USER@$SCP_HOST:$SCP_DIRECTORY $BACKUP_FILENAME
+  sshpass -p $SCP_PASSWORD scp -r $SCP_USER@$SCP_HOST:$SCP_DIRECTORY $BACKUP_FILENAME
+fi
+
 if [ -d "$BACKUP_ARCHIVE" ]; then
   info "Archiving backup"
   mv -v "$BACKUP_FILENAME" "$BACKUP_ARCHIVE/$BACKUP_FILENAME"

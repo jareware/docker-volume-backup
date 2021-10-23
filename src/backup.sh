@@ -109,7 +109,7 @@ if [ ! -z "$SCP_HOST" ]; then
   info "Uploading backup by means of SCP"
   echo "Will upload to $SCP_HOST:$SCP_DIRECTORY"
   TIME_UPLOAD="$(date +%s.%N)"
-  sshpass -p $SCP_PASSWORD scp -ro StrictHostKeyChecking=no $BACKUP_FILENAME $SCP_USER@$SCP_HOST:$SCP_DIRECTORY
+  scp -ro StrictHostKeyChecking=no -i /ssh/$SSH_KEY $BACKUP_FILENAME $SCP_USER@$SCP_HOST:$SCP_DIRECTORY
   echo "Upload finished"
   TIME_UPLOADED="$(date +%s.%N)"
 fi

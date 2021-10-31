@@ -94,6 +94,32 @@ But for the sake of example, to finish the restore for the above Grafana setup, 
 
 [Create an SSH key pair if you do not have one yet and copy the public key to the remote host where your backups should be stored.](https://foofunc.com/how-to-create-and-add-ssh-key-in-remote-ssh-server/) Then, start the backup container by setting the variables `SCP_HOST`, `SCP_USER`, `SCP_DIRECTORY`, and provide the private SSH key by mounting it into `/ssh/id_rsa`.
 
+In the example, we store the backups in the remote host folder `/home/pi/backups` and use the default SSH key located at `~/.ssh/id_rsa`:
+
+```yml
+version: "3"
+
+services:
+
+  dashboard:
+    image: grafana/grafana:7.4.5
+    volumes:
+      - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
+
+  backup:
+    image: futurice/docker-volume-backup
+    environment:
+      SCP_HOST: 192.168.0.42                       # Remote host IP address
+      SCP_USER: pi                              # Remote host user to log in
+      SCP_DIRECTORY: /home/pi/backups           # Remote host directory
+    volumes:
+      - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
+      - ~/.ssh/id_rsa:/ssh/id_rsa:ro            # Mount the SSH private key (as read-only)
+
+volumes:
+  grafana-data:
+```
+
 ### Triggering a backup manually
 
 Sometimes it's useful to trigger a backup manually, e.g. right before making some big changes.

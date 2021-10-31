@@ -92,7 +92,7 @@ But for the sake of example, to finish the restore for the above Grafana setup, 
 
 ### Backing up to remote host by means of SCP
 
-[Create an SSH key pair if you do not have one yet and copy the public key to the remote host where your backups should be stored.](https://foofunc.com/how-to-create-and-add-ssh-key-in-remote-ssh-server/) Then, start the backup container by setting the variables `SCP_HOST`, `SCP_USER`, `SCP_DIRECTORY`, and provide the private SSH key by mounting it into `/ssh/id_rsa`.
+You can also upload to your backups to a remote host by means of secure copy (SCP) based on SSH. To do so, [create an SSH key pair if you do not have one yet and copy the public key to the remote host where your backups should be stored.](https://foofunc.com/how-to-create-and-add-ssh-key-in-remote-ssh-server/) Then, start the backup container by setting the variables `SCP_HOST`, `SCP_USER`, `SCP_DIRECTORY`, and provide the private SSH key by mounting it into `/ssh/id_rsa`.
 
 In the example, we store the backups in the remote host folder `/home/pi/backups` and use the default SSH key located at `~/.ssh/id_rsa`:
 
@@ -109,7 +109,7 @@ services:
   backup:
     image: futurice/docker-volume-backup
     environment:
-      SCP_HOST: 192.168.0.42                       # Remote host IP address
+      SCP_HOST: 192.168.0.42                    # Remote host IP address
       SCP_USER: pi                              # Remote host user to log in
       SCP_DIRECTORY: /home/pi/backups           # Remote host directory
     volumes:

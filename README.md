@@ -28,7 +28,7 @@ services:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
 
   backup:
-    image: futurice/docker-volume-backup
+    image: jareware/docker-volume-backup
     volumes:
       - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
       - ./backups:/archive                      # Mount a local folder as the backup archive
@@ -54,7 +54,7 @@ services:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
 
   backup:
-    image: futurice/docker-volume-backup
+    image: jareware/docker-volume-backup
     environment:
       AWS_S3_BUCKET_NAME: my-backup-bucket      # S3 bucket which you own, and already exists
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}   # Read AWS secrets from environment (or a .env file)
@@ -107,7 +107,7 @@ services:
       - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
 
   backup:
-    image: futurice/docker-volume-backup
+    image: jareware/docker-volume-backup
     environment:
       SCP_HOST: 192.168.0.42                    # Remote host IP address
       SCP_USER: pi                              # Remote host user to log in
@@ -168,7 +168,7 @@ services:
       - "docker-volume-backup.stop-during-backup=true"
 
   backup:
-    image: futurice/docker-volume-backup:2.0.0
+    image: jareware/docker-volume-backup
     environment:
       AWS_S3_BUCKET_NAME: my-backup-bucket      # S3 bucket which you own, and already exists
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}   # Read AWS secrets from environment (or a .env file)
@@ -203,7 +203,7 @@ services:
       - docker-volume-backup.exec-post-backup=rm -rfv /tmp/influxdb
 
   backup:
-    image: futurice/docker-volume-backup:2.0.0
+    image: jareware/docker-volume-backup
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Allow use of the "pre/post exec" feature
       - influxdb-temp:/backup/influxdb:ro       # Mount the temp space so it gets backed up
@@ -319,15 +319,8 @@ A bunch of test cases exist under [`test`](test/). To run them:
 
 Some cases may need secrets available in the environment, e.g. for S3 uploads to work.
 
-## Building
+## Releasing
 
-New images can be conveniently built on [Docker Hub](https://hub.docker.com/r/futurice/docker-volume-backup/~/settings/automated-builds/). Update the tag name, save, and use the "Trigger" button:
-
-![Docker Hub build](doc/docker-hub-build.png)
-
-If this won't work, local build & push should:
-
-```
-docker build -t futurice/docker-volume-backup:2.1.0 .
-docker push futurice/docker-volume-backup:2.1.0
-```
+1. [Draft a new release on GitHub](https://github.com/jareware/docker-volume-backup/releases/new)
+1. `docker build -t jareware/docker-volume-backup:x.y.z .`
+1. `docker push jareware/docker-volume-backup:x.y.z`

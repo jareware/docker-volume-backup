@@ -90,6 +90,36 @@ But for the sake of example, to finish the restore for the above Grafana setup, 
 1. Depending on the Grafana version, [you may need to set some permissions manually](http://docs.grafana.org/installation/docker/#migration-from-a-previous-version-of-the-docker-container-to-5-1-or-later), e.g. `sudo chown -R 472:472 /var/lib/docker/volumes/bla-bla/_data`.
 1. Start Grafana back up, with `docker-compose start dashboard`. Your Grafana instance should now have travelled back in time to its latest backup.
 
+### Backing up to remote host by means of SCP
+
+You can also upload to your backups to a remote host by means of secure copy (SCP) based on SSH. To do so, [create an SSH key pair if you do not have one yet and copy the public key to the remote host where your backups should be stored.](https://foofunc.com/how-to-create-and-add-ssh-key-in-remote-ssh-server/) Then, start the backup container by setting the variables `SCP_HOST`, `SCP_USER`, `SCP_DIRECTORY`, and provide the private SSH key by mounting it into `/ssh/id_rsa`.
+
+In the example, we store the backups in the remote host folder `/home/pi/backups` and use the default SSH key located at `~/.ssh/id_rsa`:
+
+```yml
+version: "3"
+
+services:
+
+  dashboard:
+    image: grafana/grafana:7.4.5
+    volumes:
+      - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
+
+  backup:
+    image: futurice/docker-volume-backup
+    environment:
+      SCP_HOST: 192.168.0.42                    # Remote host IP address
+      SCP_USER: pi                              # Remote host user to log in
+      SCP_DIRECTORY: /home/pi/backups           # Remote host directory
+    volumes:
+      - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
+      - ~/.ssh/id_rsa:/ssh/id_rsa:ro            # Mount the SSH private key (as read-only)
+
+volumes:
+  grafana-data:
+```
+
 ### Triggering a backup manually
 
 Sometimes it's useful to trigger a backup manually, e.g. right before making some big changes.
@@ -209,6 +239,9 @@ Variable | Default | Notes
 `AWS_SECRET_ACCESS_KEY` |  | Required when using `AWS_S3_BUCKET_NAME`.
 `AWS_DEFAULT_REGION` |  | Optional when using `AWS_S3_BUCKET_NAME`. Allows you to override the AWS CLI default region. Usually not needed.
 `AWS_EXTRA_ARGS` |  | Optional additional args for the AWS CLI. Useful for e.g. providing `--endpoint-url <url>` for S3-interopable systems, such as DigitalOcean Storage.
+`SCP_HOST` |  | When provided, the resulting backup file will be uploaded by means of `scp` to the host stated.
+`SCP_USER` |  | User name to log into `SCP_HOST`.
+`SCP_DIRECTORY` |  | Directory on `SCP_HOST` where backup file is stored.
 `GPG_PASSPHRASE` |  | When provided, the backup will be encrypted with gpg using this `passphrase`.
 `INFLUXDB_URL` |  | When provided, backup metrics will be sent to an InfluxDB instance at this URL, e.g. `https://influxdb.example.com`.
 `INFLUXDB_DB` |  | Required when using `INFLUXDB_URL`; e.g. `my_database`.

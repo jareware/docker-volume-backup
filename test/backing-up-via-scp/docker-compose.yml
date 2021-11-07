@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+
+  dashboard:
+    image: grafana/grafana:7.4.5
+    volumes:
+      - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
+
+  backup:
+    image: futurice/docker-volume-backup
+    environment:
+      SCP_HOST: 192.168.0.42                    # Remote host IP address
+      SCP_USER: pi                              # Remote host user to log in
+      SCP_DIRECTORY: /home/pi/backups           # Remote host directory
+    volumes:
+      - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
+      - ~/.ssh/id_rsa:/ssh/id_rsa:ro            # Mount the SSH private key (as read-only)
+
+volumes:
+  grafana-data:

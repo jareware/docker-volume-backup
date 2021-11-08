@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-RUN apt-get update && apt-get install -y --no-install-recommends curl cron ca-certificates openssh-client unzip
+RUN apt-get update && apt-get install -y --no-install-recommends curl cron ca-certificates openssh-client iputils-ping unzip
 
 RUN rm -rf /var/lib/apt/lists/*
 

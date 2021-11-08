@@ -122,6 +122,15 @@ if [ "$skip" == "false" ]; then
     TIME_UPLOADED="$(date +%s.%N)"
   fi
 
+  if [ ! -z "$SCP_HOST" ]; then
+    info "Uploading backup by means of SCP"
+    echo "Will upload to $SCP_HOST:$SCP_DIRECTORY"
+    TIME_UPLOAD="$(date +%s.%N)"
+    scp -ro StrictHostKeyChecking=no -i /ssh/id_rsa $BACKUP_FILENAME $SCP_USER@$SCP_HOST:$SCP_DIRECTORY
+    echo "Upload finished"
+    TIME_UPLOADED="$(date +%s.%N)"
+  fi
+
   if [ -d "$BACKUP_ARCHIVE" ]; then
     info "Archiving backup"
     mv -v "$BACKUP_FILENAME" "$BACKUP_ARCHIVE/$BACKUP_FILENAME"

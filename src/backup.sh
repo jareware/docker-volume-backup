@@ -81,18 +81,22 @@ if [ "$skip" == "false" ]; then
     BACKUP_FILENAME="${BACKUP_FILENAME}.gpg"
   fi
 
-  if [ -S "$DOCKER_SOCK" ]; then
-    TEMPFILE="$(mktemp)"
-    docker ps \
-      --filter "label=docker-volume-backup.exec-post-backup" $CUSTOM_LABEL \
-      --format '{{.ID}} {{.Label "docker-volume-backup.exec-post-backup"}}' \
-      > "$TEMPFILE"
-    while read line; do
-      info "Post-exec command: $line"
-      docker exec $line
-    done < "$TEMPFILE"
-    rm "$TEMPFILE"
+  if [ ! -z "$SCP_HOST" ]; then
+    info "Uploading backup by means of SCP"
+    echo "Will upload to $SCP_HOST:$SCP_DIRECTORY"
+    TIME_UPLOAD="$(date +%s.%N)"
+    scp -ro StrictHostKeyChecking=no -i /ssh/id_rsa $BACKUP_FILENAME $SCP_USER@$SCP_HOST:$SCP_DIRECTORY
+    echo "Upload finished"
+    TIME_UPLOADED="$(date +%s.%N)"
   fi
+
+  if [ -d "$BACKUP_ARCHIVE" ]; then
+    info "Archiving backup"
+    mv -v "$BACKUP_FILENAME" "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
+    if (($BACKUP_UID > 0)); then
+      chown -v $BACKUP_UID:$BACKUP_GID "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
+    fi
+   fi
 
   if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then
     info "Starting containers back up"

@@ -1,10 +1,7 @@
 FROM ubuntu:18.04
 
-<<<<<<< HEAD
-RUN apt-get update && apt-get install -y --no-install-recommends curl cron ca-certificates unzip iputils-ping
-=======
 RUN apt-get update && apt-get install -y --no-install-recommends curl cron ca-certificates openssh-client unzip
->>>>>>> c3c0d4f4dcd0f9db37bdd9f36bf5f83861a7dec5
+
 RUN rm -rf /var/lib/apt/lists/*
 
 # Install awscliv2 https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html

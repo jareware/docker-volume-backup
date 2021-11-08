@@ -146,7 +146,7 @@ TIME_FINISH="$(date +%s.%N)"
 INFLUX_LINE="$INFLUXDB_MEASUREMENT\
 ,host=$BACKUP_HOSTNAME\
 \
-size_compressed_bytes=$BACKUP_SIZE\
+ size_compressed_bytes=$BACKUP_SIZE\
 ,containers_total=$CONTAINERS_TOTAL\
 ,containers_stopped=$CONTAINERS_TO_STOP_TOTAL\
 ,time_wall=$(perl -E "say $TIME_FINISH - $TIME_START")\

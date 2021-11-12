@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-RUN apt-get update && apt-get install -y curl cron ca-certificates unzip python-pip
+RUN apt-get update && apt-get install -y curl cron ca-certificates openssh-client unzip python-pip
 RUN rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir rotate-backups

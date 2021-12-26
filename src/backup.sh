@@ -112,6 +112,14 @@ if [ ! -z "$SCP_HOST" ]; then
   scp -ro StrictHostKeyChecking=no -i /ssh/id_rsa $BACKUP_FILENAME $SCP_USER@$SCP_HOST:$SCP_DIRECTORY
   echo "Upload finished"
   TIME_UPLOADED="$(date +%s.%N)"
+  if [ "$ROTATE_BACKUPS" == "true" ] || [ "$ROTATE_BACKUPS" == "dry-run" ]; then
+	info "Rotate backups"
+	ROTATE_BACKUPS_CONFIG="rotate-backups --hourly $ROTATE_HOURLY --daily $ROTATE_DAILY --weekly $ROTATE_WEEKLY --monthly $ROTATE_MONTHLY --yearly $ROTATE_YEARLY"
+    if [ "$ROTATE_BACKUPS" == "dry-run" ]; then
+	  ROTATE_BACKUPS_CONFIG="$ROTATE_BACKUPS_CONFIG --dry-run"
+    fi
+    ssh -o StrictHostKeyChecking=no -i /ssh/id_rsa $SCP_USER@$SCP_HOST $ROTATE_BACKUPS_CONFIG $SCP_DIRECTORY
+  fi
 fi
 
 if [ -d "$BACKUP_ARCHIVE" ]; then

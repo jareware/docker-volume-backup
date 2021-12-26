@@ -233,6 +233,12 @@ Variable | Default | Notes
 `BACKUP_WAIT_SECONDS` | `0` | The backup script will sleep this many seconds between re-starting stopped containers, and proceeding with archiving/uploading the backup. This can be useful if you don't want the load/network spike of a large upload immediately after the load/network spike of container startup.
 `BACKUP_HOSTNAME` | `$(hostname)` | Name of the host (i.e. Docker container) in which the backup runs. Mostly useful if you want a specific hostname to be associated with backup metrics (see InfluxDB support).
 `BACKUP_CUSTOM_LABEL` |  | When provided, the [start/stop](#stopping-containers-while-backing-up) and [pre/post exec](#prepost-backup-exec) logic only applies to containers with this custom label.
+`ROTATE_BACKUPS` |  | Set to `true` in order to make use of integrated package [rotate-backups](https://github.com/xolox/python-rotate-backups). The package preserves a defined set of essential backups and eliminates redundant backups.
+`ROTATE_HOURLY` | 0 | Hourly backps to keep. Can be any integer or `always`.
+`ROTATE_DAILY` | 7 | Daily backps to keep. Can be any integer or `always`.
+`ROTATE_WEEKLY` | 4 | Weekly backps to keep. Can be any integer or `always`.
+`ROTATE_MONTHLY` | 12 | Monthly backps to keep. Can be any integer or `always`.
+`ROTATE_YEARLY` | always | Yearly backps to keep. Can be any integer or `always`.
 `AWS_S3_BUCKET_NAME` |  | When provided, the resulting backup file will be uploaded to this S3 bucket after the backup has ran.
 `AWS_GLACIER_VAULT_NAME` |  | When provided, the resulting backup file will be uploaded to this AWS Glacier vault after the backup has ran.
 `AWS_ACCESS_KEY_ID` |  | Required when using `AWS_S3_BUCKET_NAME`.
@@ -271,14 +277,28 @@ If so configured, they can also be shipped to an InfluxDB instance. This allows 
 
 ## Automatic backup rotation
 
-You probably don't want to keep all backups forever. A more common strategy is to hold onto a few recent ones, and remove older ones as they become irrelevant. There's no built-in support for this in `docker-volume-backup`, but it's simple enough to set up externally.
+You probably don't want to keep all backups forever. A more common strategy is to hold onto a few recent ones, and remove older ones as they become irrelevant. There's no direct built-in support for this in `docker-volume-backup`, but if you transfer your backups via SCP to a remote host, you can trigger the [rotate-backups](https://github.com/xolox/python-rotate-backups) script in order to houshold with previous backups.
 
-### Rotation for local backups
+### Rotation for backups
 
 Check out these utilities, for example:
 
 * https://rotate-backups.readthedocs.io/en/latest/
 * https://github.com/xolox/python-rotate-backups
+
+If you like to trigger `rotate-backups` on a remote host, first, install `rotate-backups` on the remote host (i.e., by means of `sudo pip install rotate-backups`). Second, follow the instructions for [backing up to remote host by means of SCP](#backing-up-to-remote-host-by-means-of-scp). Second, activate `rotate-backups` by setting the environmental variable `ROTATE_BACKUPS: true`. The default configuration preserves zero hourly, seven daily, four weekly, twelve monthly and unlimited yearly backups. You can also customize your `rotate-backups` configuration by setting the respective environmental variables:
+
+```yml
+environment:
+  ROTATE_BACKUPS: true
+  ROTATE_HOURLY: 0
+  ROTATE_DAILY: 7
+  ROTATE_WEEKLY: 4
+  ROTATE_MONTHLY: 12
+  ROTATE_YEARLY: always
+```
+
+In order to test your custom configuration, set `ROTATE_BACKUPS: dry-run` and see the result in the container logs when the backup routine has been triggered (either by cron or by [executing backup.sh manually](#triggering-a-backup-manually)).
 
 ### Rotation for S3 backups
 

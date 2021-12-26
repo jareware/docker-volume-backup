@@ -286,7 +286,7 @@ Check out these utilities, for example:
 * https://rotate-backups.readthedocs.io/en/latest/
 * https://github.com/xolox/python-rotate-backups
 
-If you like to trigger `rotate-backups` on a remote host, first, install `rotate-backups` on the remote host (i.e., by means of `sudo pip install rotate-backups`). Second, follow the instructions for [backing up to remote host by means of SCP](#backing-up-to-remote-host-by-means-of-scp). Second, activate `rotate-backups` by setting the environmental variable `ROTATE_BACKUPS: true`. The default configuration preserves zero hourly, seven daily, four weekly, twelve monthly and unlimited yearly backups. You can also customize your `rotate-backups` configuration by setting the respective environmental variables:
+If you like to trigger `rotate-backups` on a remote host, install `rotate-backups` on the remote host (i.e., by means of `sudo pip install rotate-backups`). Then, follow the instructions for [backing up to remote host by means of SCP](#backing-up-to-remote-host-by-means-of-scp). Finally, activate `rotate-backups` by setting the environmental variable `ROTATE_BACKUPS: true`. The default configuration preserves zero hourly, seven daily, four weekly, twelve monthly and unlimited yearly backups. You can also customize your `rotate-backups` configuration by setting the respective environmental variables:
 
 ```yml
 environment:

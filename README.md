@@ -240,11 +240,13 @@ Variable | Default | Notes
 `ROTATE_MONTHLY` | 12 | Monthly backps to keep. Can be any integer or `always`.
 `ROTATE_YEARLY` | always | Yearly backps to keep. Can be any integer or `always`.
 `AWS_S3_BUCKET_NAME` |  | When provided, the resulting backup file will be uploaded to this S3 bucket after the backup has ran.
+`CHECK_HOST` |  | When provided, the availability of the named host will be checked. The host should be the destination host of the backups. If the host is available, the backup is conducted as normal. Else, the backup is skipped.
+`AWS_S3_BUCKET_NAME` |  | When provided, the resulting backup file will be uploaded to this S3 bucket after the backup has ran. You may include slashes after the bucket name if you want to upload into a specific path within the bucket, e.g. `your-bucket-name/backups/daily`.
 `AWS_GLACIER_VAULT_NAME` |  | When provided, the resulting backup file will be uploaded to this AWS Glacier vault after the backup has ran.
 `AWS_ACCESS_KEY_ID` |  | Required when using `AWS_S3_BUCKET_NAME`.
 `AWS_SECRET_ACCESS_KEY` |  | Required when using `AWS_S3_BUCKET_NAME`.
 `AWS_DEFAULT_REGION` |  | Optional when using `AWS_S3_BUCKET_NAME`. Allows you to override the AWS CLI default region. Usually not needed.
-`AWS_EXTRA_ARGS` |  | Optional additional args for the AWS CLI. Useful for e.g. providing `--endpoint-url <url>` for S3-interopable systems, such as DigitalOcean Storage.
+`AWS_EXTRA_ARGS` |  | Optional additional args for the AWS CLI. Useful for e.g. providing `--endpoint-url <url>` for S3-compatible systems, such as [DigitalOcean Spaces](https://www.digitalocean.com/products/spaces/), [MinIO](https://min.io/) and the like.
 `SCP_HOST` |  | When provided, the resulting backup file will be uploaded by means of `scp` to the host stated.
 `SCP_USER` |  | User name to log into `SCP_HOST`.
 `SCP_DIRECTORY` |  | Directory on `SCP_HOST` where backup file is stored.

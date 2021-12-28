@@ -9,6 +9,20 @@ function info {
   echo -e "\n$bold[INFO] $1$reset\n"
 }
 
+if [ "$CHECK_HOST" != "false" ]; then
+  info "Check host availability"
+  TEMPFILE="$(mktemp)"
+  ping -c 1 $CHECK_HOST | grep '1 packets transmitted, 1 received' > "$TEMPFILE"
+  PING_RESULT="$(cat $TEMPFILE)"
+  if [ ! -z "$PING_RESULT" ]; then
+    echo "$CHECK_HOST is available."
+  else
+    echo "$CHECK_HOST is not available."
+    info "Backup skipped"
+    exit 0
+  fi
+fi
+
 info "Backup starting"
 TIME_START="$(date +%s.%N)"
 DOCKER_SOCK="/var/run/docker.sock"

@@ -125,7 +125,7 @@ if [ ! -z "$SCP_HOST" ]; then
 
   if [ ! -z "$SCP_PRE_COMMAND" ]; then
       info "Pre-scp command: $SCP_PRE_COMMAND"
-      ssh -o StrictHostKeyChecking=no -i /ssh/id_rsa $SCP_USER@$SCP_HOST $SCP_DIRECTORY/$SCP_PRE_COMMAND
+      ssh -o StrictHostKeyChecking=no -i /ssh/id_rsa $SCP_USER@$SCP_HOST $SCP_PRE_COMMAND $SCP_DIRECTORY
   fi
 
 
@@ -138,7 +138,7 @@ if [ ! -z "$SCP_HOST" ]; then
 
   if [ ! -z "$SCP_POST_COMMAND" ]; then
       info "Post-scp command: $SCP_POST_COMMAND"
-      ssh -o StrictHostKeyChecking=no -i /ssh/id_rsa $SCP_USER@$SCP_HOST $SCP_DIRECTORY/$SCP_POST_COMMAND
+      ssh -o StrictHostKeyChecking=no -i /ssh/id_rsa $SCP_USER@$SCP_HOST $SCP_POST_COMMAND $SCP_DIRECTORY
   fi
 
 

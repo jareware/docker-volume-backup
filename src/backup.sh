@@ -121,18 +121,19 @@ fi
 
 if [ ! -z "$SCP_HOST" ]; then
   info "Uploading backup by means of SCP"
+  $SSH_CONFIG="-o StrictHostKeyChecking=no -i /ssh/id_rsa"
   if [ ! -z "$PRE_SCP_COMMAND" ]; then
       echo "Pre-scp command: $PRE_SCP_COMMAND"
-      ssh -o StrictHostKeyChecking=no -i /ssh/id_rsa $SCP_USER@$SCP_HOST $PRE_SCP_COMMAND
+      ssh $SSH_CONFIG $SCP_USER@$SCP_HOST $PRE_SCP_COMMAND
   fi
   echo "Will upload to $SCP_HOST:$SCP_DIRECTORY"
   TIME_UPLOAD="$(date +%s.%N)"
-  scp -o StrictHostKeyChecking=no -i /ssh/id_rsa $BACKUP_FILENAME $SCP_USER@$SCP_HOST:$SCP_DIRECTORY
+  scp $SSH_CONFIG $BACKUP_FILENAME $SCP_USER@$SCP_HOST:$SCP_DIRECTORY
   echo "Upload finished"
   TIME_UPLOADED="$(date +%s.%N)"
   if [ ! -z "$POST_SCP_COMMAND" ]; then
       echo "Post-scp command: $POST_SCP_COMMAND"
-      ssh -o StrictHostKeyChecking=no -i /ssh/id_rsa $SCP_USER@$SCP_HOST $POST_SCP_COMMAND
+      ssh $SSH_CONFIG $SCP_USER@$SCP_HOST $POST_SCP_COMMAND
   fi
 fi
 

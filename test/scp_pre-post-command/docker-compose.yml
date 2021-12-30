@@ -13,9 +13,9 @@ services:
       SCP_HOST: 192.168.0.42                    # Remote host IP address
       SCP_USER: pi                              # Remote host user to log in
       SCP_DIRECTORY: /home/pi/backups           # Remote host directory
-      # Commands that is executed before the backup is transfered by means of scp:
+      # Commands that is executed before the backup is transferred by means of scp:
       PRE_SCP_COMMAND: "ls -la /home/pi/backups"
-      # Command that is executed after the backup has been transfered by means of scp:
+      # Command that is executed after the backup has been transferred by means of scp:
       POST_SCP_COMMAND: "rotate-backups --daily 7 --weekly 4 --monthly 12 --yearly always /home/pi/backups"
     volumes:
       - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)

@@ -123,8 +123,8 @@ if [ ! -z "$SCP_HOST" ]; then
   info "Uploading backup by means of SCP"
   SSH_CONFIG="-o StrictHostKeyChecking=no -i /ssh/id_rsa"
   if [ ! -z "$PRE_SCP_COMMAND" ]; then
-      echo "Pre-scp command: $PRE_SCP_COMMAND"
-      ssh $SSH_CONFIG $SCP_USER@$SCP_HOST $PRE_SCP_COMMAND
+    echo "Pre-scp command: $PRE_SCP_COMMAND"
+    ssh $SSH_CONFIG $SCP_USER@$SCP_HOST $PRE_SCP_COMMAND
   fi
   echo "Will upload to $SCP_HOST:$SCP_DIRECTORY"
   TIME_UPLOAD="$(date +%s.%N)"

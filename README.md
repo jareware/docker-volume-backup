@@ -243,6 +243,8 @@ Variable | Default | Notes
 `SCP_HOST` |  | When provided, the resulting backup file will be uploaded by means of `scp` to the host stated.
 `SCP_USER` |  | User name to log into `SCP_HOST`.
 `SCP_DIRECTORY` |  | Directory on `SCP_HOST` where backup file is stored.
+`PRE_SCP_COMMAND` |  | Commands that is executed on `SCP_HOST` before the backup is transferred.
+`POST_SCP_COMMAND` |  | Commands that is executed on `SCP_HOST` after the backup has been transferred.
 `GPG_PASSPHRASE` |  | When provided, the backup will be encrypted with gpg using this `passphrase`.
 `INFLUXDB_URL` |  | When provided, backup metrics will be sent to an InfluxDB instance at this URL, e.g. `https://influxdb.example.com`.
 `INFLUXDB_DB` |  | Required when using `INFLUXDB_URL`; e.g. `my_database`.
@@ -272,7 +274,7 @@ If so configured, they can also be shipped to an InfluxDB instance. This allows 
 
 ## Automatic backup rotation
 
-You probably don't want to keep all backups forever. A more common strategy is to hold onto a few recent ones, and remove older ones as they become irrelevant. There's no built-in support for this in `docker-volume-backup`, but it's simple enough to set up externally.
+You probably don't want to keep all backups forever. A more common strategy is to hold onto a few recent ones, and remove older ones as they become irrelevant. There's no built-in support for this in `docker-volume-backup`, but if you transfer your backups via SCP to a remote host, you can trigger the rotate-backups script by means of setting the environmental variable `POST_SCP_COMMAND`.
 
 ### Rotation for local backups
 
@@ -280,6 +282,10 @@ Check out these utilities, for example:
 
 * https://rotate-backups.readthedocs.io/en/latest/
 * https://github.com/xolox/python-rotate-backups
+
+### Rotation for backups tranferred via SCP
+
+If you like to trigger `rotate-backups` on a remote host, install `rotate-backups` on the remote host (i.e., by means of `sudo pip install rotate-backups`). Then, follow the instructions for [backing up to remote host by means of SCP](#backing-up-to-remote-host-by-means-of-scp). Finally, set the environmental variable `POST_SCP_COMMAND: rotate-backups --daily 7 --weekly 4 --monthly 12 --yearly always /backup-directory` (where `/backup-directory` is the directory on the remote host where your backups has been transferred to). The suggested configuration preserves zero hourly, seven daily, four weekly, twelve monthly and unlimited yearly backups. 
 
 ### Rotation for S3 backups
 

@@ -132,8 +132,8 @@ if [ ! -z "$SCP_HOST" ]; then
   echo "Upload finished"
   TIME_UPLOADED="$(date +%s.%N)"
   if [ ! -z "$POST_SCP_COMMAND" ]; then
-      echo "Post-scp command: $POST_SCP_COMMAND"
-      ssh $SSH_CONFIG $SCP_USER@$SCP_HOST $POST_SCP_COMMAND
+    echo "Post-scp command: $POST_SCP_COMMAND"
+    ssh $SSH_CONFIG $SCP_USER@$SCP_HOST $POST_SCP_COMMAND
   fi
 fi
 

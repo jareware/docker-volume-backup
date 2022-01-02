@@ -9,6 +9,20 @@ function info {
   echo -e "\n$bold[INFO] $1$reset\n"
 }
 
+if [ "$CHECK_HOST" != "false" ]; then
+  info "Check host availability"
+  TEMPFILE="$(mktemp)"
+  ping -c 1 $CHECK_HOST | grep '1 packets transmitted, 1 received' > "$TEMPFILE"
+  PING_RESULT="$(cat $TEMPFILE)"
+  if [ ! -z "$PING_RESULT" ]; then
+    echo "$CHECK_HOST is available."
+  else
+    echo "$CHECK_HOST is not available."
+    info "Backup skipped"
+    exit 0
+  fi
+fi
+
 info "Backup starting"
 TIME_START="$(date +%s.%N)"
 DOCKER_SOCK="/var/run/docker.sock"
@@ -107,11 +121,20 @@ fi
 
 if [ ! -z "$SCP_HOST" ]; then
   info "Uploading backup by means of SCP"
+  SSH_CONFIG="-o StrictHostKeyChecking=no -i /ssh/id_rsa"
+  if [ ! -z "$PRE_SCP_COMMAND" ]; then
+    echo "Pre-scp command: $PRE_SCP_COMMAND"
+    ssh $SSH_CONFIG $SCP_USER@$SCP_HOST $PRE_SCP_COMMAND
+  fi
   echo "Will upload to $SCP_HOST:$SCP_DIRECTORY"
   TIME_UPLOAD="$(date +%s.%N)"
-  scp -ro StrictHostKeyChecking=no -i /ssh/id_rsa $BACKUP_FILENAME $SCP_USER@$SCP_HOST:$SCP_DIRECTORY
+  scp $SSH_CONFIG $BACKUP_FILENAME $SCP_USER@$SCP_HOST:$SCP_DIRECTORY
   echo "Upload finished"
   TIME_UPLOADED="$(date +%s.%N)"
+  if [ ! -z "$POST_SCP_COMMAND" ]; then
+    echo "Post-scp command: $POST_SCP_COMMAND"
+    ssh $SSH_CONFIG $SCP_USER@$SCP_HOST $POST_SCP_COMMAND
+  fi
 fi
 
 if [ -d "$BACKUP_ARCHIVE" ]; then
@@ -119,13 +142,6 @@ if [ -d "$BACKUP_ARCHIVE" ]; then
   mv -v "$BACKUP_FILENAME" "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
   if (($BACKUP_UID > 0)); then
     chown -v $BACKUP_UID:$BACKUP_GID "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
-  fi
-  if [ "$ROTATE_BACKUPS" == "true" ]; then
-    info "Rotate backups"
-    /usr/local/bin/rotate-backups -c /config/.rotate-backups.ini $BACKUP_ARCHIVE
-  elif [ "$ROTATE_BACKUPS" == "dry-run" ]; then
-    info "Rotate backups"
-    /usr/local/bin/rotate-backups --dry-run -c /config/.rotate-backups.ini $BACKUP_ARCHIVE
   fi
 fi
 

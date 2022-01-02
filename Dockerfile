@@ -1,9 +1,7 @@
 FROM ubuntu:18.04
 
-RUN apt-get update && apt-get install -y curl cron ca-certificates openssh-client unzip python-pip
+RUN apt-get update && apt-get install -y curl cron ca-certificates openssh-client iputils-ping unzip python-pip
 RUN rm -rf /var/lib/apt/lists/*
-
-RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir rotate-backups
 
 # Install awscliv2 https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html
 # ...but only for architectures that support it (see https://github.com/futurice/docker-volume-backup/issues/29)
@@ -15,7 +13,6 @@ RUN sh get-docker.sh
 
 COPY ./src/entrypoint.sh /root/
 COPY ./src/backup.sh /root/
-COPY ./src/.rotate-backups.ini /config/
 RUN chmod a+x /root/entrypoint.sh
 RUN chmod a+x /root/backup.sh
 

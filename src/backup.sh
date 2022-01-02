@@ -121,18 +121,27 @@ fi
 
 if [ ! -z "$SCP_HOST" ]; then
   info "Uploading backup by means of SCP"
+  SSH_CONFIG="-o StrictHostKeyChecking=no -i /ssh/id_rsa"
+  if [ ! -z "$PRE_SCP_COMMAND" ]; then
+    echo "Pre-scp command: $PRE_SCP_COMMAND"
+    ssh $SSH_CONFIG $SCP_USER@$SCP_HOST $PRE_SCP_COMMAND
+  fi
   echo "Will upload to $SCP_HOST:$SCP_DIRECTORY"
   TIME_UPLOAD="$(date +%s.%N)"
-  scp -ro StrictHostKeyChecking=no -i /ssh/id_rsa $BACKUP_FILENAME $SCP_USER@$SCP_HOST:$SCP_DIRECTORY
+  scp $SSH_CONFIG $BACKUP_FILENAME $SCP_USER@$SCP_HOST:$SCP_DIRECTORY
   echo "Upload finished"
   TIME_UPLOADED="$(date +%s.%N)"
+  if [ ! -z "$POST_SCP_COMMAND" ]; then
+    echo "Post-scp command: $POST_SCP_COMMAND"
+    ssh $SSH_CONFIG $SCP_USER@$SCP_HOST $POST_SCP_COMMAND
+  fi
   if [ "$ROTATE_BACKUPS" == "true" ] || [ "$ROTATE_BACKUPS" == "dry-run" ]; then
-	info "Rotate backups"
-	ROTATE_BACKUPS_CONFIG="rotate-backups --hourly $ROTATE_HOURLY --daily $ROTATE_DAILY --weekly $ROTATE_WEEKLY --monthly $ROTATE_MONTHLY --yearly $ROTATE_YEARLY"
+	  info "Rotate backups"
+	  ROTATE_BACKUPS_CONFIG="rotate-backups --hourly $ROTATE_HOURLY --daily $ROTATE_DAILY --weekly $ROTATE_WEEKLY --monthly $ROTATE_MONTHLY --yearly $ROTATE_YEARLY"
     if [ "$ROTATE_BACKUPS" == "dry-run" ]; then
-	  ROTATE_BACKUPS_CONFIG="$ROTATE_BACKUPS_CONFIG --dry-run"
+	    ROTATE_BACKUPS_CONFIG="$ROTATE_BACKUPS_CONFIG --dry-run"
     fi
-    ssh -o StrictHostKeyChecking=no -i /ssh/id_rsa $SCP_USER@$SCP_HOST $ROTATE_BACKUPS_CONFIG $SCP_DIRECTORY
+    ssh $SSH_CONFIG $SCP_USER@$SCP_HOST $ROTATE_BACKUPS_CONFIG $SCP_DIRECTORY
   fi
 fi
 

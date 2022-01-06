@@ -1,15 +1,14 @@
 version: "3"
 
 services:
-
   database:
     image: influxdb:1.5.4
     volumes:
       - influxdb-data:/var/lib/influxdb
       - influxdb-temp:/tmp/influxdb
     labels:
-      - docker-volume-backup.exec-pre-backup=influxd backup -portable /tmp/influxdb
-      - docker-volume-backup.exec-post-backup=rm -rfv /tmp/influxdb
+      - docker-volume-backup.exec-pre-backup=bash -c 'influxd backup -portable /tmp/influxdb'
+      - docker-volume-backup.exec-post-backup=rm -rfv /tmp/influxdb/*
 
   backup:
     build: ../..

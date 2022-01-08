@@ -13,10 +13,10 @@ services:
       # Commands that is executed before the backup is transferred:
       PRE_COMMAND: "ls -la /archive"
       # Command that is executed after the backup has been transferred:
-      POST_COMMAND: "ls -la /archive"
+      POST_COMMAND: "rm $$(find /archive/* -mtime +7)"
     volumes:
-      - grafana-data:/backup/grafana-data:ro          # Mount the Grafana data volume (as read-only)
-      - /home/pi/backups:/archive
+      - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
+      - /home/pi/backups:/archive               # Mount the directory where the backups are being stored
 
 volumes:
   grafana-data:

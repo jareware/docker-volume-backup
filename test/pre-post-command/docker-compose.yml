@@ -13,6 +13,7 @@ services:
       # Commands that is executed before the backup is transferred:
       PRE_COMMAND: "ls -la /archive"
       # Command that is executed after the backup has been transferred:
+      # "Delete all files in /archive that are older than seven days."
       POST_COMMAND: "rm $$(find /archive/* -mtime +7)"
     volumes:
       - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)

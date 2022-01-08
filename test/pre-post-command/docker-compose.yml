@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+
+  dashboard:
+    image: grafana/grafana:7.4.5
+    volumes:
+      - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
+
+  backup:
+    build: ../..
+    environment:
+      BACKUP_CUSTOM_LABEL: "test"
+      # Commands that is executed before the backup is transferred:
+      PRE_COMMAND: "ls -la /archive"
+      # Command that is executed after the backup has been transferred:
+      POST_COMMAND: "docker run --rm -v /home/pi/backups:/archive ghcr.io/jan-brinkmann/docker-rotate-backups:development"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
+      - /home/pi/backups:/archive
+
+volumes:
+  grafana-data:

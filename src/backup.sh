@@ -133,9 +133,17 @@ fi
 
 if [ -d "$BACKUP_ARCHIVE" ]; then
   info "Archiving backup"
+  if [ ! -z "$PRE_COMMAND" ]; then
+    echo "Pre command: $PRE_COMMAND"
+    $PRE_COMMAND
+  fi
   mv -v "$BACKUP_FILENAME" "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
   if (($BACKUP_UID > 0)); then
     chown -v $BACKUP_UID:$BACKUP_GID "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
+  fi
+  if [ ! -z "$POST_COMMAND" ]; then
+    echo "Post command: $POST_COMMAND"
+    $POST_COMMAND
   fi
 fi
 

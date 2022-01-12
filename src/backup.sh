@@ -129,6 +129,14 @@ if [ ! -z "$SCP_HOST" ]; then
     echo "Post-scp command: $POST_SCP_COMMAND"
     ssh $SSH_CONFIG $SCP_USER@$SCP_HOST $POST_SCP_COMMAND
   fi
+  if [ "$ROTATE_BACKUPS" == "true" ] || [ "$ROTATE_BACKUPS" == "dry-run" ]; then
+	  info "Rotate backups"
+	  ROTATE_BACKUPS_CONFIG="rotate-backups --hourly $ROTATE_HOURLY --daily $ROTATE_DAILY --weekly $ROTATE_WEEKLY --monthly $ROTATE_MONTHLY --yearly $ROTATE_YEARLY"
+    if [ "$ROTATE_BACKUPS" == "dry-run" ]; then
+	    ROTATE_BACKUPS_CONFIG="$ROTATE_BACKUPS_CONFIG --dry-run"
+    fi
+    ssh $SSH_CONFIG $SCP_USER@$SCP_HOST $ROTATE_BACKUPS_CONFIG $SCP_DIRECTORY
+  fi
 fi
 
 if [ -d "$BACKUP_ARCHIVE" ]; then

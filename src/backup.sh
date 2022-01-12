@@ -52,16 +52,13 @@ if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then
 fi
 
 if [ -S "$DOCKER_SOCK" ]; then
-  TEMPFILE="$(mktemp)"
-  docker ps \
-    --filter "label=docker-volume-backup.exec-pre-backup" $CUSTOM_LABEL \
-    --format '{{.ID}} {{.Label "docker-volume-backup.exec-pre-backup"}}' \
-    > "$TEMPFILE"
-  while read line; do
-    info "Pre-exec command: $line"
-    docker exec $line
-  done < "$TEMPFILE"
-  rm "$TEMPFILE"
+  for id in $(docker ps --filter label=docker-volume-backup.exec-pre-backup $CUSTOM_LABEL --format '{{.ID}}'); do
+    name="$(docker ps --filter id=$id --format '{{.Names}}')"
+    cmd="$(docker ps --filter id=$id --format '{{.Label "docker-volume-backup.exec-pre-backup"}}')"
+    info "Pre-exec command for: $name"
+    echo docker exec $id $cmd # echo the command we're using, for debuggability
+    eval docker exec $id $cmd
+  done
 fi
 
 info "Creating backup"
@@ -79,16 +76,13 @@ if [ ! -z "$GPG_PASSPHRASE" ]; then
 fi
 
 if [ -S "$DOCKER_SOCK" ]; then
-  TEMPFILE="$(mktemp)"
-  docker ps \
-    --filter "label=docker-volume-backup.exec-post-backup" $CUSTOM_LABEL \
-    --format '{{.ID}} {{.Label "docker-volume-backup.exec-post-backup"}}' \
-    > "$TEMPFILE"
-  while read line; do
-    info "Post-exec command: $line"
-    docker exec $line
-  done < "$TEMPFILE"
-  rm "$TEMPFILE"
+  for id in $(docker ps --filter label=docker-volume-backup.exec-post-backup $CUSTOM_LABEL --format '{{.ID}}'); do
+    name="$(docker ps --filter id=$id --format '{{.Names}}')"
+    cmd="$(docker ps --filter id=$id --format '{{.Label "docker-volume-backup.exec-post-backup"}}')"
+    info "Post-exec command for: $name"
+    echo docker exec $id $cmd # echo the command we're using, for debuggability
+    eval docker exec $id $cmd
+  done
 fi
 
 if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then
@@ -139,6 +133,10 @@ fi
 
 if [ -d "$BACKUP_ARCHIVE" ]; then
   info "Archiving backup"
+  if [ ! -z "$PRE_COMMAND" ]; then
+    echo "Pre command: $PRE_COMMAND"
+    $PRE_COMMAND
+  fi
   mv -v "$BACKUP_FILENAME" "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
   if (($BACKUP_UID > 0)); then
     chown -v $BACKUP_UID:$BACKUP_GID "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
@@ -149,6 +147,10 @@ if [ -d "$BACKUP_ARCHIVE" ]; then
   elif [ "$ROTATE_BACKUPS" == "dry-run" ]; then
     info "Rotate backups"
     /usr/local/bin/rotate-backups --dry-run -c /config/.rotate-backups.ini $BACKUP_ARCHIVE
+  fi
+  if [ ! -z "$POST_COMMAND" ]; then
+    echo "Post command: $POST_COMMAND"
+    $POST_COMMAND
   fi
 fi
 

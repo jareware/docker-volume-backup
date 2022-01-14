@@ -276,14 +276,18 @@ If so configured, they can also be shipped to an InfluxDB instance. This allows 
 
 ## Automatic backup rotation
 
-You probably don't want to keep all backups forever. A more common strategy is to hold onto a few recent ones, and remove older ones as they become irrelevant. There's no built-in support for this in `docker-volume-backup`, but if you transfer your backups via SCP to a remote host, you can trigger the rotate-backups script by means of setting the environmental variable `POST_SCP_COMMAND`.
+You probably don't want to keep all backups forever. A more common strategy is to hold onto a few recent ones, and remove older ones as they become irrelevant. There's no built-in support for this in `docker-volume-backup`, but you are enabled to trigger an external Docker container that includes [`rotate-backups`](https://pypi.org/project/rotate-backups/): [docker-rotate-backups](https://github.com/jan-brinkmann/docker-rotate-backups).
 
 ### Rotation for local backups
 
-Check out these utilities, for example:
-
-* https://rotate-backups.readthedocs.io/en/latest/
-* https://github.com/xolox/python-rotate-backups
+Let `/path/to/backups` be the path to your backups. Then, fill the environmental variable `POST_COMMAND` with the following command. An additional requirement is access to `docker.sock` in order to start `docker-rotate-backups`.
+```
+environment:
+  POST_COMMAND: docker run --rm -e DRY_RUN=false -v /path/to/backups:/archive ghcr.io/jan-brinkmann/docker-rotate-backups
+volumes:
+  - /var/run/docker.sock:/var/run/docker.sock:ro # Allow use of the "pre/post exec" feature
+```
+The default rotation scheme preserves seven daily, four weekly, twelve monthly, and every yearly backups. For mor information on customizing the rotation scheme, we refer to the [`docker-rotate-backups` documentation](https://github.com/jan-brinkmann/docker-rotate-backups#how-to-customize).
 
 ### Rotation for backups tranferred via SCP
 

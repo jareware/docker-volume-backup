@@ -285,9 +285,9 @@ Let `/path/to/backups` be the path to your backups. Then, fill the environmental
 environment:
   POST_COMMAND: docker run --rm -e DRY_RUN=false -v /path/to/backups:/archive ghcr.io/jan-brinkmann/docker-rotate-backups
 volumes:
-  - /var/run/docker.sock:/var/run/docker.sock:ro # Allow use of the "pre/post exec" feature
+  - /var/run/docker.sock:/var/run/docker.sock:ro
 ```
-The default rotation scheme preserves seven daily, four weekly, twelve monthly, and every yearly backups. For mor information on customizing the rotation scheme, we refer to the [`docker-rotate-backups` documentation](https://github.com/jan-brinkmann/docker-rotate-backups#how-to-customize).
+The default rotation scheme preserves seven daily, four weekly, twelve monthly, and every yearly backups. For more information on customizing the rotation scheme, we refer to the [`docker-rotate-backups` documentation](https://github.com/jan-brinkmann/docker-rotate-backups#how-to-customize).
 
 ### Rotation for backups tranferred via SCP
 

@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+
+  dashboard:
+    image: grafana/grafana:7.4.5
+    volumes:
+      - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
+
+  backup:
+    build: ../..
+    environment:
+      # Command that is executed after the backup has been transferred:
+      # "Trigger external Docker container that includes rotate-backups and disable dry-run option."
+      POST_COMMAND: "docker run --rm -e DRY_RUN=false -v /home/pi/backups:/archive ghcr.io/jan-brinkmann/docker-rotate-backups"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
+      - /home/pi/backups:/archive               # Mount the directory where the backups are being stored
+
+volumes:
+  grafana-data:

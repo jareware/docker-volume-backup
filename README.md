@@ -166,10 +166,12 @@ services:
     labels:
       # Adding this label means this container should be stopped while it's being backed up:
       - "docker-volume-backup.stop-during-backup=true"
+      - "grafana"
 
   backup:
     image: jareware/docker-volume-backup
     environment:
+      BACKUP_CUSTOM_LABEL: "grafana"
       AWS_S3_BUCKET_NAME: my-backup-bucket      # S3 bucket which you own, and already exists
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}   # Read AWS secrets from environment (or a .env file)
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}

@@ -27,11 +27,8 @@ info "Backup starting"
 TIME_START="$(date +%s.%N)"
 DOCKER_SOCK="/var/run/docker.sock"
 
-if [ ! -z "$BACKUP_CUSTOM_LABEL" ]; then
+if [ -S "$DOCKER_SOCK" ] && [ ! -z "$BACKUP_CUSTOM_LABEL" ]; then
   CUSTOM_LABEL="--filter label=$BACKUP_CUSTOM_LABEL"
-fi
-
-if [ -S "$DOCKER_SOCK" ]; then
   TEMPFILE="$(mktemp)"
   docker ps --format "{{.ID}}" --filter "label=docker-volume-backup.stop-during-backup=true" $CUSTOM_LABEL > "$TEMPFILE"
   CONTAINERS_TO_STOP="$(cat $TEMPFILE | tr '\n' ' ')"
@@ -43,7 +40,13 @@ if [ -S "$DOCKER_SOCK" ]; then
 else
   CONTAINERS_TO_STOP_TOTAL="0"
   CONTAINERS_TOTAL="0"
-  echo "Cannot access \"$DOCKER_SOCK\", won't look for containers to stop"
+  if [ ! -S "$DOCKER_SOCK" ]; then
+    echo "Cannot access \"$DOCKER_SOCK\"."
+  fi
+  if [ -z "$BACKUP_CUSTOM_LABEL" ]; then
+    echo "No BACKUP_CUSTOM_LABEL set."
+  fi
+  echo "Thus, won't look for containers to stop."
 fi
 
 if [ "$CONTAINERS_TO_STOP_TOTAL" != "0" ]; then

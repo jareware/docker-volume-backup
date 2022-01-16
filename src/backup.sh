@@ -61,6 +61,12 @@ if [ -S "$DOCKER_SOCK" ]; then
   done
 fi
 
+if [ ! -z "$PRE_BACKUP_COMMAND" ]; then
+  info "Pre-backup command"
+  echo "$PRE_BACKUP_COMMAND"
+  eval $PRE_BACKUP_COMMAND
+fi
+
 info "Creating backup"
 BACKUP_FILENAME="$(date +"${BACKUP_FILENAME:-backup-%Y-%m-%dT%H-%M-%S.tar.gz}")"
 TIME_BACK_UP="$(date +%s.%N)"
@@ -133,19 +139,18 @@ fi
 
 if [ -d "$BACKUP_ARCHIVE" ]; then
   info "Archiving backup"
-  if [ ! -z "$PRE_COMMAND" ]; then
-    echo "Pre command: $PRE_COMMAND"
-    $PRE_COMMAND
-  fi
   mv -v "$BACKUP_FILENAME" "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
   if (($BACKUP_UID > 0)); then
     chown -v $BACKUP_UID:$BACKUP_GID "$BACKUP_ARCHIVE/$BACKUP_FILENAME"
   fi
-  if [ ! -z "$POST_COMMAND" ]; then
-    echo "Post command: $POST_COMMAND"
-    $POST_COMMAND
-  fi
 fi
+
+if [ ! -z "$POST_BACKUP_COMMAND" ]; then
+  info "Post-backup command"
+  echo "$POST_BACKUP_COMMAND"
+  eval $POST_BACKUP_COMMAND
+fi
+
 
 if [ -f "$BACKUP_FILENAME" ]; then
   info "Cleaning up"

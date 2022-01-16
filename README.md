@@ -228,8 +228,8 @@ Variable | Default | Notes
 `BACKUP_CRON_EXPRESSION` | `@daily` | Standard debian-flavored `cron` expression for when the backup should run. Use e.g. `0 4 * * *` to back up at 4 AM every night. See the [man page](http://man7.org/linux/man-pages/man8/cron.8.html) or [crontab.guru](https://crontab.guru/) for more.
 `BACKUP_FILENAME` | `backup-%Y-%m-%dT%H-%M-%S.tar.gz` | File name template for the backup file. Is passed through `date` for formatting. See the [man page](http://man7.org/linux/man-pages/man1/date.1.html) for more.
 `BACKUP_ARCHIVE` | `/archive` | When this path is available within the container (i.e. you've mounted a Docker volume there), a finished backup file will get archived there after each run.
-`PRE_COMMAND` |  | Commands that is executed before the backup is transferred to `/archive`.
-`POST_COMMAND` |  | Commands that is executed after the backup has been transferred to `/archive`.
+`PRE_BACKUP_COMMAND` |  | Commands that is executed before the backup is created.
+`POST_BACKUP_COMMAND` |  | Commands that is executed after the backup has been transferred.
 `BACKUP_UID` | `root (0)` | After backup file has been moved to archive location the file user ownership is changed to this UID.
 `BACKUP_GID` | `$BACKUP_UID` | After backup file has been moved to archive location the file group ownership is changed to this GID.
 `BACKUP_WAIT_SECONDS` | `0` | The backup script will sleep this many seconds between re-starting stopped containers, and proceeding with archiving/uploading the backup. This can be useful if you don't want the load/network spike of a large upload immediately after the load/network spike of container startup.

@@ -5,18 +5,34 @@ services:
   dashboard:
     image: grafana/grafana:7.4.5
     volumes:
-      - grafana-data:/var/lib/grafana           # This is where Grafana keeps its data
+      - grafana-data:/var/lib/grafana                # This is where Grafana keeps its data
 
-  backup:
+  backup-locally:
     build: ../..
     environment:
+      BACKUP_CRON_EXPRESSION: "0 * * * *"
       # Command that is executed after the backup has been transferred:
       # "Trigger external Docker container that includes rotate-backups and disable dry-run option."
-      POST_COMMAND: "docker run --rm -e DRY_RUN=false -v /home/pi/backups:/archive ghcr.io/jan-brinkmann/docker-rotate-backups"
+      POST_BACKUP_COMMAND: "docker run --rm -e DRY_RUN=false -v /home/pi/backups:/archive ghcr.io/jan-brinkmann/docker-rotate-backups"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - grafana-data:/backup/grafana-data:ro    # Mount the Grafana data volume (as read-only)
-      - /home/pi/backups:/archive               # Mount the directory where the backups are being stored
+      - grafana-data:/backup/grafana-data:ro         # Mount the Grafana data volume (as read-only)
+      - /home/pi/backups:/archive                    # Mount the directory where the backups are being stored
+
+  backup-scp:
+    build: ../..
+    environment:
+      BACKUP_CRON_EXPRESSION: "30 * * * *"
+      SCP_HOST: 192.168.0.42                         # Remote host IP address
+      SCP_USER: pi                                   # Remote host user to log in
+      SCP_DIRECTORY: /home/pi/backups                # Remote host directory
+      # Command that is executed after the backup has been transferred:
+      # "Trigger external Docker container that includes rotate-backups and disable dry-run option."
+      POST_BACKUP_COMMAND: "docker run --rm -e DRY_RUN=false -e SSH_USER=pi -e SSH_HOST=192.168.0.42 -e SSH_ARCHIVE=/home/pi/backups -v /home/pi/.ssh/id_rsa:/root/.ssh/id_rsa:ro ghcr.io/jan-brinkmann/docker-rotate-backups"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Mount the docker.sock file (as read-only)
+      - /home/pi/.ssh/id_rsa:/ssh/id_rsa:ro          # Mount the SSH private key (as read-only)
+      - grafana-data:/backup/grafana-data:ro         # Mount the Grafana data volume (as read-only)
 
 volumes:
   grafana-data:

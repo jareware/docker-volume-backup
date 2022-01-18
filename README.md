@@ -4,10 +4,11 @@ Docker image for performing simple backups of Docker volumes. Main features:
 
 - Mount volumes into the container, and they'll get backed up
 - Use full `cron` expressions for scheduling the backups
-- Backs up to local disk, [AWS S3](https://aws.amazon.com/s3/), or both
+- Backs up to local disk, to remote host available via `scp`, to [AWS S3](https://aws.amazon.com/s3/), or to all of them
 - Allows triggering a backup manually if needed
 - Optionally stops containers for the duration of the backup, and starts them again afterward, to ensure consistent backups
 - Optionally `docker exec`s commands before/after backing up a container, to allow easy integration with database backup tools, for example
+- Optionally executes commands before/after backing up inside `docker-volume-backup` container and/or on remote host
 - Optionally ships backup metrics to [InfluxDB](https://docs.influxdata.com/influxdb/), for monitoring
 - Optionally encrypts backups with `gpg` before uploading
 
@@ -280,18 +281,29 @@ You probably don't want to keep all backups forever. A more common strategy is t
 
 ### Rotation for local backups
 
-Let `/path/to/backups` be the path to your backups. Then, fill the environmental variable `POST_COMMAND` with the following command. An additional requirement is access to `docker.sock` in order to start `docker-rotate-backups`.
+Let `/home/pi/backups` be the path to your backups. Then, fill the environmental variable `POST_BACKUP_COMMAND` with the following command. An additional requirement is access to `docker.sock` in order to start `docker-rotate-backups`.
 ```
 environment:
-  POST_COMMAND: docker run --rm -e DRY_RUN=false -v /path/to/backups:/archive ghcr.io/jan-brinkmann/docker-rotate-backups
+  POST_BACKUP_COMMAND: "docker run --rm -e DRY_RUN=false -v /home/pi/backups:/archive ghcr.io/jan-brinkmann/docker-rotate-backups"
 volumes:
   - /var/run/docker.sock:/var/run/docker.sock:ro
+  - /home/pi/backups:/archive
 ```
 The default rotation scheme preserves seven daily, four weekly, twelve monthly, and every yearly backups. For more information on customizing the rotation scheme, we refer to the [`docker-rotate-backups` documentation](https://github.com/jan-brinkmann/docker-rotate-backups#how-to-customize).
 
 ### Rotation for backups tranferred via SCP
 
-If you like to trigger `rotate-backups` on a remote host, install `rotate-backups` on the remote host (i.e., by means of `sudo pip install rotate-backups`). Then, follow the instructions for [backing up to remote host by means of SCP](#backing-up-to-remote-host-by-means-of-scp). Finally, set the environmental variable `POST_SCP_COMMAND: rotate-backups --daily 7 --weekly 4 --monthly 12 --yearly always /backup-directory` (where `/backup-directory` is the directory on the remote host where your backups has been transferred to). The suggested configuration preserves zero hourly, seven daily, four weekly, twelve monthly and unlimited yearly backups. 
+You are also enabled to run `docker-rotate-backups` on remote directories. To do so, the command inside `POST_BACKUP_COMMAND` has to include all necessary information in order to access the remote host by means of SSH. Remember, if you transfer your backups by means of SCP, all these information in `SSH_USER`, `SSH_HOST`, `SSH_ARCHIVE`, and the SSH public key are already there.
+```
+environment:
+  SCP_HOST: 192.168.0.42
+  SCP_USER: pi
+  SCP_DIRECTORY: /path/to/backups
+  POST_BACKUP_COMMAND: "docker run --rm -e DRY_RUN=false -e SSH_USER=pi -e SSH_HOST=192.168.0.42 -e SSH_ARCHIVE=/home/pi/backups -v /home/pi/.ssh/id_rsa:/root/.ssh/id_rsa:ro ghcr.io/jan-brinkmann/docker-rotate-backups"
+volumes:
+  - /var/run/docker.sock:/var/run/docker.sock:ro
+  - /home/pi/.ssh/id_rsa:/ssh/id_rsa:ro
+```
 
 ### Rotation for S3 backups
 

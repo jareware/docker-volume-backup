@@ -277,11 +277,15 @@ If so configured, they can also be shipped to an InfluxDB instance. This allows 
 
 ## Automatic backup rotation
 
-You probably don't want to keep all backups forever. A more common strategy is to hold onto a few recent ones, and remove older ones as they become irrelevant. There's no built-in support for this in `docker-volume-backup`, but you are enabled to trigger an external Docker container that includes [`rotate-backups`](https://pypi.org/project/rotate-backups/): [docker-rotate-backups](https://github.com/jan-brinkmann/docker-rotate-backups).
+You probably don't want to keep all backups forever. A more common strategy is to hold onto a few recent ones, and remove older ones as they become irrelevant. There's no built-in support for this in `docker-volume-backup`, but you are enabled to trigger an external Docker container that includes [`rotate-backups`](https://pypi.org/project/rotate-backups/). In the examples, we draw on [docker-rotate-backups](https://github.com/jan-brinkmann/docker-rotate-backups).
+
+In order to start an external Docker container, access to `docker.sock` has to be granted (as already seen in in the section on [stopping containers while backing up](#stopping-containers-while-backing-up)). Then, `docker-rotate-backups` can be run on local directories as well as on remote directories.
+
+The default rotation scheme implemented in `docker-rotate-backups` preserves seven daily, four weekly, twelve monthly, and every yearly backups. For detailed information on customizing the rotation scheme, we refer to the [documentation](https://github.com/jan-brinkmann/docker-rotate-backups#how-to-customize).
 
 ### Rotation for local backups
 
-Let `/home/pi/backups` be the path to your backups. Then, fill the environmental variable `POST_BACKUP_COMMAND` with the following command. An additional requirement is access to `docker.sock` in order to start `docker-rotate-backups`.
+Let `/home/pi/backups` be the path to your local backups. Then, initialize the environmental variable `POST_BACKUP_COMMAND` with the following command.
 ```
 environment:
   POST_BACKUP_COMMAND: "docker run --rm -e DRY_RUN=false -v /home/pi/backups:/archive ghcr.io/jan-brinkmann/docker-rotate-backups"
@@ -289,11 +293,10 @@ volumes:
   - /var/run/docker.sock:/var/run/docker.sock:ro
   - /home/pi/backups:/archive
 ```
-The default rotation scheme preserves seven daily, four weekly, twelve monthly, and every yearly backups. For more information on customizing the rotation scheme, we refer to the [`docker-rotate-backups` documentation](https://github.com/jan-brinkmann/docker-rotate-backups#how-to-customize).
 
 ### Rotation for backups tranferred via SCP
 
-You are also enabled to run `docker-rotate-backups` on remote directories. To do so, the command inside `POST_BACKUP_COMMAND` has to include all necessary information in order to access the remote host by means of SSH. Remember, if you transfer your backups by means of SCP, all these information in `SSH_USER`, `SSH_HOST`, `SSH_ARCHIVE`, and the SSH public key are already there.
+Here, let `/home/pi/backups` be the backup diretory on a remote host. To run `docker-rotate-backups` on that directory, the command within `POST_BACKUP_COMMAND` has to include all necessary information in order to access the remote host by means of SSH. Remember, if you transfer your [backups by means of SCP](#backing-up-to-remote-host-by-means-of-scp), all the information in `SSH_USER`, `SSH_HOST`, `SSH_ARCHIVE`, and the SSH public key are already there.
 ```
 environment:
   SCP_HOST: 192.168.0.42

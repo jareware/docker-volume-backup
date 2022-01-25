@@ -296,7 +296,7 @@ volumes:
 
 ### Rotation for backups tranferred via SCP
 
-Here, let `/home/pi/backups` be the backup diretory on a remote host. To run `docker-rotate-backups` on that directory, the command within `POST_BACKUP_COMMAND` has to include all necessary information in order to access the remote host by means of SSH. Remember, if you transfer your [backups by means of SCP](#backing-up-to-remote-host-by-means-of-scp), all the information in `SSH_USER`, `SSH_HOST`, `SSH_ARCHIVE`, and the SSH public key are already there.
+Here, let `/home/pi/backups` be the backup directory on a remote host. To run `docker-rotate-backups` on that directory, the command in `POST_BACKUP_COMMAND` has to include all necessary information in order to access the remote host by means of SSH. Remember, if you transfer your [backups by means of SCP](#backing-up-to-remote-host-by-means-of-scp), all information in `SSH_USER`, `SSH_HOST`, `SSH_ARCHIVE`, and the SSH public key are already available.
 ```
 environment:
   SCP_HOST: 192.168.0.42

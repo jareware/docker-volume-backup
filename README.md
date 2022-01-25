@@ -277,7 +277,7 @@ If so configured, they can also be shipped to an InfluxDB instance. This allows 
 
 ## Automatic backup rotation
 
-You probably don't want to keep all backups forever. A more common strategy is to hold onto a few recent ones, and remove older ones as they become irrelevant. There's no built-in support for this in `docker-volume-backup`, but you are enabled to trigger an external Docker container that includes [`rotate-backups`](https://pypi.org/project/rotate-backups/). In the examples, we draw on [docker-rotate-backups](https://github.com/jan-brinkmann/docker-rotate-backups).
+You probably don't want to keep all backups forever. A more common strategy is to hold onto a few recent ones, and remove older ones as they become irrelevant. There's no built-in support for this in `docker-volume-backup`, but you are able to trigger an external Docker container that includes [`rotate-backups`](https://pypi.org/project/rotate-backups/). In the examples, we draw on [docker-rotate-backups](https://github.com/jan-brinkmann/docker-rotate-backups).
 
 In order to start an external Docker container, access to `docker.sock` has to be granted (as already seen in in the section on [stopping containers while backing up](#stopping-containers-while-backing-up)). Then, `docker-rotate-backups` can be run on local directories as well as on remote directories.
 

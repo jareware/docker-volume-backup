@@ -12,10 +12,8 @@ RUN if [ $(uname -m) = "aarch64" ] || [ $(uname -m) = "x86_64" ] ; then curl -sS
 RUN curl -fsSL get.docker.com -o get-docker.sh
 RUN sh get-docker.sh
 
-COPY ./src/entrypoint.sh /root/
-COPY ./src/backup.sh /root/
-RUN chmod a+x /root/entrypoint.sh
-RUN chmod a+x /root/backup.sh
+COPY ./src/entrypoint.sh ./src/backup.sh /root/
+RUN chmod a+x /root/entrypoint.sh /root/backup.sh
 
 WORKDIR /root
 CMD [ "/root/entrypoint.sh" ]

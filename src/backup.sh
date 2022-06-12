@@ -122,7 +122,8 @@ fi
 if [ ! -z "$FTP_HOST" ]; then
   info "Uploading backup by means of FTP"
   echo "Will upload to $FTP_HOST:$FTP_DIRECTORY"
-  eval ncftpput -u $FTP_USER -p $FTP_PASS -P $FTP_PORT $FTP_HOST $FTP_DIRECTORY $BACKUP_FILENAME
+  eval ncftpput -V -u $FTP_USER -p $FTP_PASS -P $FTP_PORT $FTP_HOST $FTP_DIRECTORY $BACKUP_FILENAME
+  echo "Upload finished"
 fi
 
 if [ ! -z "$SCP_HOST" ]; then

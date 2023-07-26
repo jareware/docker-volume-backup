@@ -172,7 +172,7 @@ INFLUX_LINE="$INFLUXDB_MEASUREMENT\
 "
 echo "$INFLUX_LINE" | sed 's/ /,/g' | tr , '\n'
 
-if [ ! -z "$INFLUXDB_URL" ]; then
+if [ ! -z "$INFLUXDB_CREDENTIALS" ]; then
   info "Shipping metrics"
   curl \
     --silent \
@@ -180,6 +180,15 @@ if [ ! -z "$INFLUXDB_URL" ]; then
     --request POST \
     --user "$INFLUXDB_CREDENTIALS" \
     "$INFLUXDB_URL/write?db=$INFLUXDB_DB" \
+    --data-binary "$INFLUX_LINE"
+elif [ ! -z "$INFLUXDB_API_TOKEN" ]; then
+  info "Shipping metrics"
+  curl \
+    --silent \
+    --include \
+    --request POST \
+    --header "Authorization: Token $INFLUXDB_API_TOKEN" \
+    "$INFLUXDB_URL/api/v2/write?org=$INFLUXDB_ORGANIZATION&bucket=$INFLUXDB_BUCKET" \
     --data-binary "$INFLUX_LINE"
 fi
 

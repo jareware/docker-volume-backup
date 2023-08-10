@@ -251,10 +251,10 @@ Variable | Default | Notes
 `GPG_PASSPHRASE` |  | When provided, the backup will be encrypted with gpg using this `passphrase`.
 `INFLUXDB_URL` |  | Required when sending metrics to InfluxDB.
 `INFLUXDB_MEASUREMENT` | `docker_volume_backup` | Required when sending metrics to InfluxDB.
-`INFLUXDB_API_TOKEN` | | When provided, backup metrics will be sent to an InfluxDB instance using the API token for authorization.
+`INFLUXDB_API_TOKEN` | | When provided, backup metrics will be sent to an InfluxDB instance using the API token for authorization. If API Tokens are not supported by the InfluxDB version in use, `INFLUXDB_CREDENTIALS` must be provided instead.
 `INFLUXDB_ORGANIZATION` | | Required when using `INFLUXDB_API_TOKEN`; e.g. `personal`.
 `INFLUXDB_BUCKET` | | Required when using `INFLUXDB_API_TOKEN`; e.g. `backup_metrics`
-`INFLUXDB_CREDENTIALS` |  | When provided, backup metrics will be sent to an InfluxDB instance using `user:password` authentication.
+`INFLUXDB_CREDENTIALS` |  | When provided, backup metrics will be sent to an InfluxDB instance using `user:password` authentication. This is required if `INFLUXDB_API_TOKEN` not provided.
 `INFLUXDB_DB` |  | Required when using `INFLUXDB_URL`; e.g. `my_database`.
 `TZ` | `UTC` | Which timezone should `cron` use, e.g. `America/New_York` or `Europe/Warsaw`. See [full list of available time zones](http://manpages.ubuntu.com/manpages/bionic/man3/DateTime::TimeZone::Catalog.3pm.html).
 

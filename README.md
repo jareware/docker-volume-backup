@@ -353,5 +353,5 @@ Some cases may need secrets available in the environment, e.g. for S3 uploads to
 ## Releasing
 
 1. [Draft a new release on GitHub](https://github.com/jareware/docker-volume-backup/releases/new)
-1. `docker build -t jareware/docker-volume-backup:x.y.z .`
-1. `docker push jareware/docker-volume-backup:x.y.z`
+1. `docker buildx build --platform linux/amd64,linux/arm64 -t jareware/docker-volume-backup:latest --push .`
+1. `docker buildx build --platform linux/amd64,linux/arm64 -t jareware/docker-volume-backup:x.y.z --push .`

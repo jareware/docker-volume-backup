@@ -4,7 +4,7 @@ Docker image for performing simple backups of Docker volumes. Main features:
 
 - Mount volumes into the container, and they'll get backed up
 - Use full `cron` expressions for scheduling the backups
-- Backs up to local disk, to remote host available via `scp`, to [AWS S3](https://aws.amazon.com/s3/), or to all of them
+- Backs up to local disk, to remote host available via `scp` or `ftp`, to [AWS S3](https://aws.amazon.com/s3/), or to all of them
 - Allows triggering a backup manually if needed
 - Optionally stops containers for the duration of the backup, and starts them again afterward, to ensure consistent backups
 - Optionally `docker exec`s commands before/after backing up a container, to allow easy integration with database backup tools, for example
@@ -248,6 +248,11 @@ Variable | Default | Notes
 `SCP_DIRECTORY` |  | Directory on `SCP_HOST` where backup file is stored.
 `PRE_SCP_COMMAND` |  | Commands that is executed on `SCP_HOST` before the backup is transferred.
 `POST_SCP_COMMAND` |  | Commands that is executed on `SCP_HOST` after the backup has been transferred.
+`FTP_HOST` |  | When provided, the resulting backup file will be uploaded by means of `ftp` to the host stated.
+`FTP_PORT` | 21 | Port, on which the host stated above is listening.
+`FTP_USER` |  | User name to log into `FTP_HOST`.
+`FTP_PASS` |  | Password to log into `FTP_HOST`.
+`FTP_DIRECTORY` |  | Directory on `FTP_HOST` where backup file is stored.
 `GPG_PASSPHRASE` |  | When provided, the backup will be encrypted with gpg using this `passphrase`.
 `INFLUXDB_URL` |  | Required when sending metrics to InfluxDB.
 `INFLUXDB_MEASUREMENT` | `docker_volume_backup` | Required when sending metrics to InfluxDB.

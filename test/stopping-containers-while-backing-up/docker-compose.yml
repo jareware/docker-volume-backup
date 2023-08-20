@@ -10,11 +10,13 @@ services:
       - grafana-data:/var/lib/grafana
     labels:
       - "docker-volume-backup.stop-during-backup=true"
+      - "grafana"
 
   backup:
     build: ../..
     environment:
       BACKUP_CRON_EXPRESSION: "* * * * *"
+      BACKUP_CUSTOM_LABEL: "grafana"
       AWS_S3_BUCKET_NAME: docker-volume-backup-test-bucket
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
